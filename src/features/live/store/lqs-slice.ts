@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AxiosError, isAxiosError } from "axios";
 import WS from "@/features/live/utils/ws";
-import storeStatuses from "@/common/utils/async-store-statuses";
 import wsActionTypes from "@/features/live/utils/action-types";
 import { http } from "@/common/services/axios";
 
@@ -10,8 +8,7 @@ const initState = {
     id: "",
     code: "",
     quizId: "",
-    status: storeStatuses.IDLE,
-    error: null,
+    locked: false,
   } as LqsStoreState,
 } as InitLqsStoreState;
 
@@ -28,9 +25,7 @@ export const lqs = createSlice({
       state.value = initState.value;
     },
     connect: () => {},
-    disconnect: (state) => {
-      state.value = initState.value;
-    },
+    disconnect: () => {},
     trigger: (_, action: PayloadAction<WSAction>) => {
       console.log(`${action.payload.type} triggered`);
     },
@@ -40,51 +35,36 @@ export const lqs = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createLqs.pending, (state) => {
-        state.value.status = storeStatuses.PENDING;
-      })
       .addCase(createLqs.fulfilled, (state, action) => {
-        state.value.status = storeStatuses.SUCCESS;
         state.value.id = action.payload.id;
         state.value.code = action.payload.code;
         state.value.quizId = action.payload.quizId;
       })
-      .addCase(createLqs.rejected, (state, action) => {
-        state.value.status = storeStatuses.FAILURE;
-        if (isAxiosError(action.payload)) {
-          state.value.error = action.payload as AxiosError;
-        } else {
-          state.value.error = action.payload as Error;
-        }
-      })
-      .addCase(joinLqs.pending, (state) => {
-        state.value.status = storeStatuses.PENDING;
-      })
-      .addCase(joinLqs.fulfilled, (state, action) => {
-        state.value.status = storeStatuses.SUCCESS;
+      .addCase(checkLqs.fulfilled, (state, action) => {
         state.value.id = action.payload.id;
         state.value.code = action.payload.code;
         state.value.quizId = action.payload.quizId;
-      })
-      .addCase(joinLqs.rejected, (state, action) => {
-        state.value.status = storeStatuses.FAILURE;
-        if (isAxiosError(action.payload)) {
-          state.value.error = action.payload as AxiosError;
-        } else {
-          state.value.error = action.payload as Error;
-        }
       });
   },
 });
 
-export const createLqs = createAsyncThunk(
-  "lqs/createLqs",
-  async (reqBody: CreateLqsReqBody) => {
+export const createLqs = createAsyncThunk("lqs/createLqs", async (req: any) => {
+  try {
+    const { data } = await http.post(`/live`, {
+      quiz_id: req.quizId,
+      config: req.config,
+    });
+    return data;
+  } catch (error) {
+    return error;
+  }
+});
+
+export const checkLqs = createAsyncThunk(
+  "lqs/checkLqs",
+  async (code: string) => {
     try {
-      const { data } = await http.post(`/live`, {
-        quiz_id: reqBody.quizId,
-        config: reqBody.config,
-      });
+      const { data } = await http.get(`/live/${code}/check`);
       return data;
     } catch (error) {
       return error;
@@ -92,23 +72,15 @@ export const createLqs = createAsyncThunk(
   }
 );
 
-export const joinLqs = createAsyncThunk("lqs/joinLqs", async (code: string) => {
-  try {
-    const { data } = await http.get(`/live/check/${code}`);
-    return data;
-  } catch (error) {
-    return error;
-  }
-});
-
 export const endLqs = createAsyncThunk(
   "lqs/endLqs",
   async (_, { dispatch, getState }) => {
     const { lqs } = getState() as StoreRootState;
-    dispatch(trigger({ type: wsActionTypes.END_LQS }));
-    dispatch(resetLqs());
+    const { code } = lqs.value;
     try {
-      const { data } = await http.delete(`/live/${lqs.value.id}`);
+      dispatch(trigger({ type: wsActionTypes.END_LQS }));
+      const { data } = await http.get(`/live/${code}/end`);
+      dispatch(resetLqs());
       return data;
     } catch (error) {
       return error;

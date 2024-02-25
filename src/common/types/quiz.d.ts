@@ -1,41 +1,62 @@
 declare global {
   type Question = {
     id: string;
-    quizId: string;
-    isParent: boolean;
-    parentId: string;
+    pool: number;
+    poolRequired: boolean;
     type: string;
-    order: number;
     content: string;
     note: string;
+    mediaType: string;
     media: string;
     timeLimit: number;
     haveTimeFactor: boolean;
     timeFactor: number;
     fontSize: number;
-    selectUpTo: number;
-    options: OptionChoice[] | OptionText[];
-    answer: Answer;
+    layout: number;
+    selectMin: number;
+    selectMax: number;
+    options: ChoiceOption[] | TextOption[] | MatchingOption[];
   };
 
-  type OptionChoice = {
+  type ChoiceOption = {
     id: string;
-    qId: string;
     order: number;
     content: string;
-    mark: number;
     color: string;
-    isCorrect: boolean;
-    qContent: string;
-    timeTaken: number;
+    mark: number;
   };
 
-  type OptionText = {};
+  type TextOption = {
+    id: string;
+    order: number;
+    content: string;
+    caseSensitive: boolean;
+  };
 
-  type Answer = {
+  type MatchingOption = MatchingOptionPrompt | MatchingOptionOption;
+  type MatchingOptionPrompt = {
+    id: string;
+    type: "MATCHING_PROMPT";
+    content: string;
+    color: "white";
+    order: number;
+    eliminate: false;
+  };
+  type MatchingOptionOption = {
+    id: string;
+    type: "MATCHING_OPTION";
     content: string;
     color: string;
-    qContent: string;
+    order: number;
+    eliminate: boolean;
+  };
+
+  type AnswerResponse = {
+    pid: string;
+    qid: string;
+    type: string;
+    time: number;
+    options: ChoiceOption[] | TextOption[] | MatchingOption[];
   };
 }
 

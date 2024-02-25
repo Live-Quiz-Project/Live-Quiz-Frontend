@@ -1,4 +1,4 @@
-import { refreshToken } from "@/features/auth/store/slice";
+import { logOut, refreshToken } from "@/features/auth/store/slice";
 import axios, {
   AxiosError,
   AxiosResponse,
@@ -8,9 +8,6 @@ import { store } from "@/app/store";
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || "",
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true,
 });
 
@@ -32,15 +29,13 @@ http.interceptors.response.use(
     const prevReq = err.config;
     if (err.response?.status === 401 && prevReq) {
       try {
-        const { data } = await http.get("/refresh", {
-          withCredentials: true,
-        });
-
+        const { data } = await http.get("/refresh");
         store.dispatch(refreshToken(data.token));
         prevReq.headers["Authorization"] = `Bearer ${data.token}`;
         return http(prevReq);
       } catch (error) {
-        console.error(error);
+        await http.get("/logout");
+        store.dispatch(logOut());
       }
     }
     return Promise.reject(err);

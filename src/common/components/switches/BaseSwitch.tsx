@@ -11,21 +11,23 @@ export default function BaseSwitch({
   checked,
   setChecked,
 }: Props) {
-  function handleOnSwitch(e: FormEvent<HTMLButtonElement>) {
+  function onSwitch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
     setChecked((prev: boolean) => !prev);
   }
 
   return (
     <button
-      onClick={handleOnSwitch}
+      onClick={onSwitch}
       className={`relative h-10 aspect-[2/1] rounded-full transition-all duration-300 ${
-        checked ? "bg-pastel-orange" : "bg-light-gray"
+        checked ? "bg-koromiko" : "bg-quill-gray"
       } ${className}`}
     >
       <span
         className={`absolute top-0 block border-2 bg-white h-full rounded-full aspect-square transition-all duration-300 ${
-          checked ? "left-1/2 border-pastel-orange" : "left-0 border-light-gray"
+          checked
+            ? "left-full -translate-x-full border-koromiko"
+            : "left-0 translate-x-0 border-quill-gray"
         }`}
       />
     </button>

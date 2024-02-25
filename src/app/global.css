@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-size: 16px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+[contenteditable="true"]:empty:before {
+  content: attr(data-placeholder);
+  opacity: 0.5;
+  pointer-events: none;
+  display: block;
+  @apply truncate;
+}
+
+@layer components {
+  .text-stroke-white {
+    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white,
+      1px 1px 0 white;
+  }
+
+  .text-title {
+    @apply text-3xl lg:text-4xl;
+  }
+
+  .text-subtitle {
+    @apply text-2xl lg:text-3xl;
+  }
+
+  .text-header-1 {
+    @apply text-xl lg:text-2xl;
+  }
+
+  .text-header-2 {
+    @apply text-lg lg:text-xl;
+  }
+
+  .text-header-3 {
+    @apply text-base lg:text-lg;
+  }
+
+  .text-body-1 {
+    @apply text-sm lg:text-base;
+  }
+
+  .text-body-2 {
+    @apply text-xs lg:text-sm;
+  }
+
+  .text-body-3 {
+    @apply text-2xs lg:text-xs;
+  }
+
+  .text-note {
+    @apply text-2xs;
+  }
+}

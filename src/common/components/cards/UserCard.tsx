@@ -1,31 +1,32 @@
-import Emoji from "@/common/utils/emoji";
+import Emoji from "@/common/utils/emojis";
 
 type Props = {
   className?: string;
-  size: "s" | "m" | "l";
-  user: User;
+  size: "sm" | "md" | "lg";
+  user: {
+    displayName: string;
+    displayEmoji: string;
+    displayColor: string;
+  };
 };
 
 export default function UserCard({ className = "", user, size }: Props) {
   return (
     <div
-      className={`${className} ${size === "s" && "text-header-1 p-1"} ${
-        size === "m" && "text-subtitle p-1.5"
-      } ${
-        size === "l" && "text-title p-2"
-      } w-max h-fit flex items-center font-light rounded-full bg-peach font-sans-serif text-orange-black`}
+      className={`${size === "sm" ? "text-header-2 p-1 h-16 " : ""}${
+        size === "md" ? "text-header-1 p-1.5 h-20 " : ""
+      }${
+        size === "lg" ? "text-subtitle p-2 h-24 " : ""
+      }w-max flex items-center font-light rounded-full bg-egg-sour font-sans-serif text-dune ${className}`}
     >
       <div
-        className={`${size === "s" && "w-12 h-12"} ${
-          size === "m" && "w-16 h-16"
-        } ${
-          size === "l" && "w-20 h-20"
-        } flex items-center justify-center rounded-full`}
-        style={{ backgroundColor: user.color }}
+        className="h-full aspect-square flex items-center justify-center rounded-full"
+        style={{ backgroundColor: user.displayColor }}
       >
-        {Emoji[user.emoji as keyof typeof Emoji]}
+        {Emoji.find((e) => e.value === user.displayEmoji)?.label ||
+          Emoji[0].label}
       </div>
-      <p className="pl-3 pr-4">{user.name}</p>
+      <p className="pl-[0.6em] pr-[0.7em]">{user.displayName}</p>
     </div>
   );
 }

@@ -17,11 +17,11 @@ export default function BaseAccordion({
   init = false,
   children,
 }: ComponentProps) {
-  const [isExpanded, setIsExpanded] = useState<boolean>(init);
+  const [isExpanded, setExpanded] = useState<boolean>(init);
 
-  function handleOnToggle(e: FormEvent<HTMLButtonElement>) {
+  function onToggle(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
-    setIsExpanded((prev) => !prev);
+    setExpanded((prev) => !prev);
   }
 
   return (
@@ -30,12 +30,12 @@ export default function BaseAccordion({
         if (checkNamespace(child, "head")) {
           return (
             <button
-              onClick={handleOnToggle}
-              className="flex items-center justify-between w-full space-x-4"
+              onClick={onToggle}
+              className="relative flex h-fit items-center justify-center overflow-hidden w-full gap-4 leading-tight"
             >
               {child}
               <FaChevronDown
-                className={`transition-all duration-300 h-4 w-4 ${
+                className={`absolute top-1/2 -translate-y-1/2 right-0 transition-all duration-300 h-2 min-h-4 w-2 min-w-4 ${
                   isExpanded && "rotate-180"
                 }`}
               />
@@ -59,11 +59,11 @@ export default function BaseAccordion({
   );
 }
 
-BaseAccordion.Head = ({ children, className = "" }: ChildProps) => (
+BaseAccordion.Head = ({ children, className }: ChildProps) => (
   <div className={className}>{children}</div>
 );
 
-BaseAccordion.Body = ({ children, className = "" }: ChildProps) => (
+BaseAccordion.Body = ({ children, className }: ChildProps) => (
   <div className={className}>{children}</div>
 );
 

@@ -1,18 +1,17 @@
 import { Dispatch, Middleware, PayloadAction } from "@reduxjs/toolkit";
 import WS from "@/features/live/utils/ws";
-import wsStatuses from "@/features/live/utils/statuses";
 import wsActionTypes from "@/features/live/utils/action-types";
-import { resetLqs } from "@/features/live/store/lqs-slice";
-import { fetchParticipant } from "@/features/lobby/store/slice";
+import wsStatuses from "@/features/live/utils/statuses";
 import {
   resetMod,
-  setAnswer,
-  setMod,
-  setOptions,
-  setQuestion,
-  setQuestionCount,
+  setAnswers,
+  setStatus,
   setTimeLeft,
+  updateMod,
 } from "@/features/live/store/mod-slice";
+import { setParticipant } from "@/features/auth/store/slice";
+import { setParticipants } from "@/features/lobby/store/slice";
+import { resetLqs } from "@/features/live/store/lqs-slice";
 
 const wsMiddleware =
   (ws: WS): Middleware =>
@@ -22,151 +21,148 @@ const wsMiddleware =
     const { getState, dispatch } = storeAPI;
     const { type, payload } = action;
     const { auth, lqs }: StoreRootState = getState();
-    const {
-      user: { id, name, isHost },
-    } = auth.value;
-    const { code, quizId } = lqs.value;
+    const { token, user, anonymous, participant } = auth.value;
+    const { code } = lqs.value;
 
     switch (type) {
       case "lqs/connect":
-        if (!id && !name && !code) {
+        if (
+          (anonymous &&
+            !participant.displayName &&
+            !participant.displayEmoji &&
+            !participant.displayColor &&
+            !code) ||
+          (!anonymous &&
+            !user.displayName &&
+            !user.displayEmoji &&
+            !user.displayColor &&
+            !code)
+        ) {
           console.error("Not enought information provided to connect");
           break;
         }
+
         ws.connect(
-          `${
-            import.meta.env.VITE_WEBSOCKET_URL
-          }/live/join/${quizId}?uid=${id}&uname=${name}&is-host=${isHost}`
+          `${import.meta.env.VITE_WEBSOCKET_URL}/live/${code}/join?${
+            participant.id ? `pid=${participant.id}&` : ""
+          }${token ? `uid=${user.id}` : ""}&name=${
+            anonymous ? participant.displayName : user.displayName
+          }&emoji=${
+            anonymous ? participant.displayEmoji : user.displayEmoji
+          }&color=${(anonymous
+            ? participant.displayColor
+            : user.displayColor
+          ).replace("#", "%23")}`
         );
 
         ws.on("open", () => {
-          ws.send({ type: wsActionTypes.JOINED_LQS });
           console.log("Connection established");
         });
 
         ws.on("message", (e) => {
-          try {
-            const m: WSMessage = JSON.parse((e as MessageEvent).data);
-            const { type: t, payload: p } = m.content;
-            console.log(t, p);
+          const m: WSMessage = JSON.parse((e as MessageEvent).data);
+          const { type: t, payload: p } = m.content;
+          console.log(t, p);
 
-            switch (t) {
-              case wsActionTypes.JOINED_LQS:
-                dispatch(fetchParticipant());
-                break;
-              case wsActionTypes.LEFT_LQS:
-                dispatch(fetchParticipant());
-                break;
-              case wsActionTypes.START_LQS:
-                dispatch(setTimeLeft(3));
+          switch (t) {
+            case wsActionTypes.JOIN_LQS:
+              if (
+                (!participant.id ||
+                  (participant.id && p.participant_id === participant.id)) &&
+                user.isHost === p.is_host
+              ) {
                 dispatch(
-                  setMod({
-                    curQ: 0,
-                    status: wsStatuses.STARTING,
+                  setParticipant({
+                    id: p.participant_id,
+                    code: p.code,
+                    displayName: p.participant_name,
+                    displayEmoji: p.participant_emoji,
+                    displayColor: p.participant_color,
                   })
                 );
-                break;
-              case wsActionTypes.END_LQS:
-                dispatch(setTimeLeft(-1));
-                dispatch(
-                  setMod({
-                    curQ: 0,
-                    status: wsStatuses.ENDING,
-                  })
-                );
-                if (ws.isConnected()) {
-                  ws.disconnect();
-                }
-                break;
-              case wsActionTypes.COUNTDOWN:
-                dispatch(setTimeLeft(p.timeLeft));
-                break;
-              case wsActionTypes.DISTRIBUTE_QUESTION:
-                console.log(t, p);
-                dispatch(setTimeLeft(-1));
-                dispatch(setQuestionCount(p.mod.qCount));
-                dispatch(
-                  setMod({
-                    curQ: p.mod.curQ,
-                    status: p.mod.status,
-                  })
-                );
-                dispatch(setQuestion(p.question));
-                break;
-              case wsActionTypes.DISTRIBUTE_OPTIONS:
-                console.log(t, p);
-                dispatch(setTimeLeft(-1));
-                dispatch(
-                  setMod({
-                    curQ: p.mod.curQ,
-                    status: p.mod.status,
-                  })
-                );
-                dispatch(setOptions(p.options));
-                break;
-              case wsActionTypes.REVEAL_ANSWER:
-                console.log(t, p);
-                dispatch(setTimeLeft(-1));
-                dispatch(
-                  setMod({
-                    curQ: p.mod.curQ,
-                    status: p.mod.status,
-                  })
-                );
-                dispatch(setAnswer(p.answer));
-                break;
-              default:
-                break;
-            }
-          } catch (error) {
-            console.error(error);
+              }
+              if (user.isHost === p.is_host) dispatch(setAnswers(p.answers));
+              dispatch(updateMod());
+              ws.send({ type: wsActionTypes.GET_PARTICIPANTS });
+              break;
+            case wsActionTypes.LEAVE_LQS:
+              dispatch(updateMod());
+              ws.send({ type: wsActionTypes.GET_PARTICIPANTS });
+              break;
+            case wsActionTypes.KICK_PARTICIPANT:
+              dispatch(resetLqs());
+              dispatch(resetMod());
+              if (ws.isConnected()) ws.disconnect();
+              break;
+            case wsActionTypes.START_LQS:
+              dispatch(setTimeLeft(3));
+              dispatch(updateMod());
+              break;
+            case wsActionTypes.END_LQS:
+              dispatch(setStatus(wsStatuses.ENDING));
+              if (ws.isConnected()) ws.disconnect();
+              break;
+            case wsActionTypes.COUNTDOWN:
+              dispatch(setTimeLeft(p.time_left));
+              break;
+            case wsActionTypes.DISTRIBUTE_QUESTION:
+              dispatch(setTimeLeft(5));
+              dispatch(updateMod());
+              break;
+            case wsActionTypes.DISTRIBUTE_MEDIA:
+              dispatch(setTimeLeft(15));
+              dispatch(updateMod());
+              break;
+            case wsActionTypes.DISTRIBUTE_OPTIONS:
+              dispatch(setTimeLeft(p));
+              dispatch(setAnswers(null));
+              dispatch(updateMod());
+              break;
+            case wsActionTypes.REVEAL_ANSWER:
+              dispatch(setTimeLeft(0));
+              dispatch(setAnswers(p));
+              dispatch(updateMod());
+              break;
+            case wsActionTypes.CONCLUDE:
+              dispatch(updateMod());
+              ws.send({ type: wsActionTypes.GET_PARTICIPANTS });
+              break;
+            case wsActionTypes.GET_PARTICIPANTS:
+              dispatch(setParticipants(p));
+              break;
+            case wsActionTypes.TOGGLE_LOCK:
+              dispatch(updateMod());
+              break;
+            case wsActionTypes.SUBMIT_ANSWER:
+              dispatch(updateMod());
+              break;
+            case wsActionTypes.UNSUBMIT_ANSWER:
+              dispatch(setAnswers(null));
+              dispatch(updateMod());
+              break;
+            default:
+              break;
           }
         });
 
         ws.on("close", () => {
-          ws.send({ type: wsActionTypes.LEFT_LQS });
-          dispatch(
-            setMod({
-              curQ: 0,
-              status: wsStatuses.ENDING,
-            })
-          );
+          ws.send({ type: wsActionTypes.LEAVE_LQS });
           ws.disconnect();
-          dispatch(resetMod());
           console.log("Connection closed");
         });
-
         break;
 
       case "lqs/trigger":
-        if (!ws.isConnected()) {
-          ws.connect(
-            `${
-              import.meta.env.VITE_WEBSOCKET_URL
-            }/lqses/join/${code}?uid=${id}&uname=${name}&is-host=${isHost}`
-          );
-          ws.on("open", () => {
-            ws.send({
-              type: (payload as WSAction).type,
-              payload: (payload as WSAction).payload,
-            });
+        if (ws.isConnected()) {
+          ws.send({
+            type: (payload as WSAction).type,
+            payload: (payload as WSAction).payload,
           });
-          break;
         }
-        ws.send({
-          type: (payload as WSAction).type,
-          payload: (payload as WSAction).payload,
-        });
         break;
 
       case "lqs/endLqs":
-        dispatch(
-          setMod({
-            curQ: 0,
-            status: wsStatuses.ENDING,
-          })
-        );
-        dispatch(resetLqs());
+        dispatch(setStatus(wsStatuses.ENDING));
         ws.send({ type: wsActionTypes.END_LQS });
         break;
 

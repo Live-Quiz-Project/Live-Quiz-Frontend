@@ -1,4 +1,4 @@
-import WSStatus from "@/features/ws/utils/statuses";
+import wsStatuses from "@/features/live/utils/statuses";
 import AsyncStoreStatus from "@/common/utils/async-store-statuses";
 import { participants } from "./../../features/lobby/slice";
 import { store } from "@/app/store";
@@ -10,7 +10,9 @@ declare global {
 
   type AuthStoreState = {
     token: string;
-    user: User;
+    user: User & { isHost: boolean };
+    participant: User & { code?: string };
+    anonymous: boolean;
   };
   type InitAuthStoreState = {
     value: AuthStoreState;
@@ -20,8 +22,6 @@ declare global {
     id: string;
     code: string;
     quizId: string;
-    status: AsyncStoreStatus;
-    error: AxiosError | Error | null;
   };
   type LqsStorePayload = {
     id: string;
@@ -33,16 +33,33 @@ declare global {
   };
 
   type ModStoreState = {
-    qCount: number;
+    pending: boolean;
+    quizId: string;
+    quizTitle: string;
     curQ: number;
-    timeLeft: number;
-    status: WSStatus;
+    totalQ: number;
     question: Question | null;
-    answer: unknown;
-  };
-  type ModStorePayload = {
-    curQ: number;
-    status: WSStatus;
+    answers?: any;
+    timeLeft: number;
+    status: wsStatuses;
+    locked: boolean;
+    resCount: number;
+    participantCount: number;
+    config: {
+      shuffle: {
+        question: bool;
+        option: bool;
+      };
+      participant: { reanswer: bool };
+      leaderboard: {
+        during: bool;
+        after: bool;
+      };
+      option: {
+        colorless: bool;
+        show_correct_answer: bool;
+      };
+    };
   };
   type InitModStoreState = {
     value: ModStoreState;
@@ -50,8 +67,6 @@ declare global {
 
   type LobbyStoreState = {
     participants: User[];
-    status: AsyncStoreStatus;
-    error: AxiosError | Error | null;
   };
   type InitLobbyStoreState = {
     value: LobbyStoreState;

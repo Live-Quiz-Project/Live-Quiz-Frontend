@@ -1,28 +1,27 @@
 import { createBrowserRouter } from "react-router-dom";
 import { lazy } from "react";
+import LiveQuizRoutes from "@/app/router/LiveRoutes";
 
 const AuthGuard = lazy(() => import("@/features/auth/AuthGuard"));
 const Config = lazy(() => import("@/features/config"));
-// const Join = lazy(() => import("@/features/participant/Join"));
+const Join = lazy(() => import("@/features/join"));
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "",
     element: <AuthGuard />,
-    children: [
-      {
-        path: "config/:quizId",
-        element: <Config />,
-      },
-      // {
-      //   path: ":code",
-      //   children: LiveQuizRoutes,
-      // },
-    ],
+  },
+  {
+    path: "config/:quizId",
+    element: <Config />,
   },
   {
     path: "join",
-    // element: <Join />,
+    element: <Join />,
+  },
+  {
+    path: ":code",
+    children: LiveQuizRoutes,
   },
 ]);
 
