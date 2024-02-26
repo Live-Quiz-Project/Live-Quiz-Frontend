@@ -1,0 +1,15 @@
+apps:
+  namespace: prd
+  image: ghcr.io/phurits/oqp-live-frontend
+  tag: prd
+  replicas: 1
+  imagePullSecrets: ghcr-registry
+  port: 5173
+  targetPort: 5173
+ingress:
+  host: live.inquesto.online
+  path: /
+  serviceType: ClusterIP
+  tlsSecretName: tls-live-frontend-prd
+extraEnv:
+  secretName: oqp-live-frontend-env
