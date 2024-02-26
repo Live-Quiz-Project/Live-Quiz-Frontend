@@ -4,8 +4,8 @@ apps:
   tag: prd
   replicas: 1
   imagePullSecrets: ghcr-registry
-  port: 5173
-  targetPort: 5173
+  port: 3000
+  targetPort: 3000
 ingress:
   host: live.inquesto.online
   path: /
