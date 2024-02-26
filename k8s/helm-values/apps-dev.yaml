@@ -1,0 +1,15 @@
+apps:
+  namespace: dev
+  image: ghcr.io/phurits/oqp-live-frontend
+  tag: dev
+  replicas: 1
+  imagePullSecrets: ghcr-registry
+  port: 3000
+  targetPort: 3000
+ingress:
+  host: dev.live.inquesto.online
+  path: /
+  serviceType: ClusterIP
+  tlsSecretName: tls-live-frontend-dev
+extraEnv:
+  secretName: oqp-live-frontend-env
