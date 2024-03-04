@@ -19,7 +19,7 @@ export default function DetailedOptionsSwitch({
 
   return (
     <div
-      className={`${className} relative flex justify-between w-20 xs:w-24 h-8 xs:h-10 p-1 text-beie rounded-full bg-karry border`}
+      className={`${className} relative flex justify-between w-20 xs:w-24 h-8 xs:h-10 p-1  rounded-full bg-karry border`}
     >
       <span
         className={`${

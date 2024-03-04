@@ -184,7 +184,7 @@ export default function KeyPad({
         </div>
       </div>
       {showQrReader && (
-        <div className="fixed top-0 left-0 z-50 h-dscreen w-screen bg-dune/50 flex items-center justify-center">
+        <div className="fixed top-0 left-0 z-50 h-dvh w-screen bg-dune/50 flex items-center justify-center">
           <div
             ref={qrReaderRef}
             className="w-fit h-fit container m-auto flex items-center justify-center"

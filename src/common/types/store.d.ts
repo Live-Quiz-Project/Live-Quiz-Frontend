@@ -11,7 +11,7 @@ declare global {
   type AuthStoreState = {
     token: string;
     user: User & { isHost: boolean };
-    participant: User & { code?: string };
+    participant: User & { code?: string; marks: number };
     anonymous: boolean;
   };
   type InitAuthStoreState = {
@@ -63,6 +63,11 @@ declare global {
   };
   type InitModStoreState = {
     value: ModStoreState;
+  };
+
+  type ParticipantsStoreState = (User & { marks: number })[];
+  type InitParticipantStoreState = {
+    value: ParticipantsStoreState;
   };
 
   type LobbyStoreState = {

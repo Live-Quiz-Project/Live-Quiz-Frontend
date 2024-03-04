@@ -15,40 +15,49 @@ declare global {
     layout: number;
     selectMin: number;
     selectMax: number;
-    options: ChoiceOption[] | TextOption[] | MatchingOption[];
+    subquestions: Question[];
+    options: ChoiceOption[] | TextOption[] | MatchingOption;
   };
 
   type ChoiceOption = {
     id: string;
-    order: number;
     content: string;
     color: string;
     mark: number;
+    correct: boolean;
   };
 
   type TextOption = {
     id: string;
-    order: number;
+    answer: string;
     content: string;
+    correct: boolean;
+    mark: number;
     caseSensitive: boolean;
   };
 
-  type MatchingOption = MatchingOptionPrompt | MatchingOptionOption;
+  type MatchingOption = {
+    prompts: MatchingOptionPrompt[];
+    options: MatchingOptionOption[];
+  };
   type MatchingOptionPrompt = {
     id: string;
-    type: "MATCHING_PROMPT";
     content: string;
     color: "white";
     order: number;
-    eliminate: false;
   };
   type MatchingOptionOption = {
     id: string;
-    type: "MATCHING_OPTION";
     content: string;
     color: string;
     order: number;
     eliminate: boolean;
+  };
+  type MatchingAnswer = {
+    prompt: string;
+    option: string;
+    correct: boolean;
+    mark: number;
   };
 
   type AnswerResponse = {
@@ -56,7 +65,7 @@ declare global {
     qid: string;
     type: string;
     time: number;
-    options: ChoiceOption[] | TextOption[] | MatchingOption[];
+    options: ChoiceOption[] | TextOption[] | string | MatchingAnswer[];
   };
 }
 

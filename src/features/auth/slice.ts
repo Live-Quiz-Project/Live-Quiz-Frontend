@@ -16,6 +16,7 @@ const initState = {
       displayName: "",
       displayColor: "#FFBB60",
       displayEmoji: Emoji[0].value,
+      marks: 0,
     },
     anonymous: true,
   } as AuthStoreState,
@@ -59,17 +60,18 @@ export const auth = createSlice({
     setParticipantDisplayColor: (state, action: PayloadAction<string>) => {
       state.value.participant!.displayColor = action.payload;
     },
-    setParticipant: (
-      state,
-      action: PayloadAction<{
-        id: string;
-        code: string;
-        displayName: string;
-        displayEmoji: string;
-        displayColor: string;
-      }>
-    ) => {
-      state.value.participant = action.payload;
+    setParticipant: (state, action: PayloadAction<any>) => {
+      state.value.participant = {
+        id: action.payload.id,
+        code: action.payload.code,
+        displayName: action.payload.name,
+        displayEmoji: action.payload.emoji,
+        displayColor: action.payload.color,
+        marks: action.payload.marks,
+      };
+    },
+    setTotalMarks: (state, action: PayloadAction<number>) => {
+      state.value.participant!.marks = action.payload;
     },
     resetParticipant: (state) => {
       state.value.participant = initState.value.participant;
@@ -99,6 +101,7 @@ export const {
   setParticipantDisplayEmoji,
   setParticipantDisplayColor,
   setParticipant,
+  setTotalMarks,
   resetParticipant,
   resetParticipantDisplayData,
   refreshToken,

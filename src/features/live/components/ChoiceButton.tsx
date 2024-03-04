@@ -7,6 +7,7 @@ import {
 } from "react";
 
 type ComponentProps = {
+  id?: string;
   className?: string;
   style?: React.CSSProperties;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -24,6 +25,7 @@ type ChildProps = {
 };
 
 export default function ChoiceButton({
+  id,
   className = "",
   style,
   onChange,
@@ -32,11 +34,12 @@ export default function ChoiceButton({
   disabled,
   value,
   type = "button",
-  checked = false,
+  checked,
   children,
 }: ComponentProps) {
   return (
     <div
+      id={id}
       className={`relative flex items-center justify-center w-full h-full overflow-auto text-dune rounded-lg lg:rounded-xl 2xl:rounded-[1vw] ${
         checked ? "border-[3px] sm:border-4 border-koromiko" : "border"
       } ${className}`}
@@ -61,7 +64,7 @@ export default function ChoiceButton({
             <div
               className={`${
                 areDetailsShown ? "opacity-100" : "opacity-0"
-              } font-sans-serif text-[1em] transition-all duration-300`}
+              } font-sans-serif text-[1em] transition-all duration-300 text-center`}
             >
               {child}
             </div>

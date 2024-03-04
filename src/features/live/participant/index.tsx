@@ -1,52 +1,26 @@
-import { useEffect, useState } from "react";
-import { connect, disconnect } from "@/features/live/store/lqs-slice";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTypedSelector } from "@/common/hooks/useTypedSelector";
+import { connect, disconnect } from "@/features/live/store/lqs-slice";
+import { resetMod } from "@/features/live/store/mod-slice";
 import wsStatuses from "@/features/live/utils/statuses";
 import OnStarting from "@/features/live/participant/components/OnStarting";
 import OnQuestioning from "@/features/live/participant/components/OnQuestioning";
 import OnAnswering from "@/features/live/participant/components/on-answering";
 import OnRevealingAnswer from "@/features/live/participant/components/on-revealing-answer";
-import OnConcluding from "@/features/live/participant/components/OnConcluding";
-import { resetMod } from "@/features/live/store/mod-slice";
-import { useNavigate, useParams } from "react-router-dom";
-import { useTypedSelector } from "@/common/hooks/useTypedSelector";
+import OnConcluding from "@/features/live/participant/components/on-concluding";
 import MediaTypes from "@/features/live/utils/media-types";
 
 export default function ParticipantLiveQuiz() {
   const { code } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<StoreDispatch>();
-  const [isActive, setActive] = useState(false);
-  const [timeTaken, setTimeTaken] = useState(0);
   const mod = useTypedSelector((state) => state.mod);
 
   useEffect(() => {
     dispatch(connect());
   }, []);
-
-  useEffect(() => {
-    let interval: number | undefined = undefined;
-    if (isActive) {
-      interval = setInterval(() => {
-        setTimeTaken((prev) => prev + 10);
-      }, 10);
-    } else {
-      setTimeTaken(0);
-      clearInterval(interval);
-    }
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [isActive]);
-
-  useEffect(() => {
-    if (mod.value.status === wsStatuses.ANSWERING) {
-      setActive(true);
-    } else if (mod.value.status === wsStatuses.REVEALING_ANSWER) {
-      setActive(false);
-    }
-  }, [mod.value.status]);
 
   if (code && mod.value.status === wsStatuses.STARTING) {
     return <OnStarting />;
@@ -67,8 +41,12 @@ export default function ParticipantLiveQuiz() {
   }
 
   if (mod.value.status === wsStatuses.ANSWERING) {
-    if (!mod.value.question || !mod.value.question.options) return null;
-    return <OnAnswering timeTaken={timeTaken} />;
+    if (
+      !mod.value.question ||
+      !(mod.value.question.options || mod.value.question.subquestions)
+    )
+      return null;
+    return <OnAnswering />;
   }
 
   if (mod.value.status === wsStatuses.REVEALING_ANSWER) {

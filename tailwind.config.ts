@@ -38,9 +38,6 @@ export default {
         "-1": "-1",
         1: "1",
       },
-      height: {
-        dscreen: ["100vh", "100dvh"],
-      },
     },
   },
   plugins: [],

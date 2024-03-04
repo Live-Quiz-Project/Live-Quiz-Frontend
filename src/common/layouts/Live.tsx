@@ -20,7 +20,7 @@ export default function Layout({ children, className }: Props) {
   const auth = useTypedSelector((state) => state.auth);
   const [isQrExpanded, setQrExpanded] = useState<boolean>(false);
 
-  async function onCancel(e: FormEvent<HTMLButtonElement>) {
+  async function onEnd(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
     dispatch(endLqs());
     navigate(`/config/${lqs.value.quizId}`, { replace: true });
@@ -32,7 +32,7 @@ export default function Layout({ children, className }: Props) {
   }
 
   return (
-    <div className={`h-dscreen w-full grid grid-rows-[1fr_auto] ${className}`}>
+    <div className={`h-dvh w-full grid grid-rows-[1fr_auto] ${className}`}>
       {Children.map(children, (child) => (
         <>
           {checkNamespace(child, "content") && child}
@@ -64,16 +64,16 @@ export default function Layout({ children, className }: Props) {
                 <p className="text-header-3 xs:text-header-2">&#35;{code}</p>
                 {auth.value.user.isHost && (
                   <OutlinedButton
-                    onClick={onCancel}
-                    className="text-body-1 md:text-header-2 2xl:text-[1vw] border-beige/10 hover:bg-scarlet bg-scarlet xs:bg-transparent !border xs:border 2xl:!py-[0.5vw] 2xl:!px-[1vw] w-full self-end transition-all duration-300"
+                    onClick={onEnd}
+                    className="text-body-1 md:text-header-2 2xl:text-[1vw] border-beige/10 hover:bg-scarlet !border xs:border 2xl:!py-[0.5vw] 2xl:!px-[1vw] w-full self-end transition-all duration-300"
                   >
-                    Cancel
+                    End
                   </OutlinedButton>
                 )}
                 {!auth.value.user.isHost && (
                   <OutlinedButton
                     onClick={onLeave}
-                    className="text-body-1 md:text-header-2 2xl:text-[1vw] border-beige/10 hover:bg-scarlet bg-scarlet xs:bg-transparent !border xs:border 2xl:!py-[0.5vw] 2xl:!px-[1vw] w-full self-end transition-all duration-300"
+                    className="text-body-1 md:text-header-2 2xl:text-[1vw] border-beige/10 hover:bg-scarlet !border xs:border 2xl:!py-[0.5vw] 2xl:!px-[1vw] w-full self-end transition-all duration-300"
                   >
                     Leave
                   </OutlinedButton>

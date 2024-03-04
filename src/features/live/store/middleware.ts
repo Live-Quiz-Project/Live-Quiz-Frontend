@@ -6,11 +6,11 @@ import {
   resetMod,
   setAnswers,
   setStatus,
-  setTimeLeft,
+  setCountDown,
   updateMod,
 } from "@/features/live/store/mod-slice";
-import { setParticipant } from "@/features/auth/store/slice";
-import { setParticipants } from "@/features/lobby/store/slice";
+import { setParticipant, setTotalMarks } from "@/features/auth/slice";
+import { setParticipants } from "@/features/live/store/participants-slice";
 import { resetLqs } from "@/features/live/store/lqs-slice";
 
 const wsMiddleware =
@@ -62,8 +62,6 @@ const wsMiddleware =
         ws.on("message", (e) => {
           const m: WSMessage = JSON.parse((e as MessageEvent).data);
           const { type: t, payload: p } = m.content;
-          console.log(t, p);
-
           switch (t) {
             case wsActionTypes.JOIN_LQS:
               if (
@@ -71,19 +69,11 @@ const wsMiddleware =
                   (participant.id && p.participant_id === participant.id)) &&
                 user.isHost === p.is_host
               ) {
-                dispatch(
-                  setParticipant({
-                    id: p.participant_id,
-                    code: p.code,
-                    displayName: p.participant_name,
-                    displayEmoji: p.participant_emoji,
-                    displayColor: p.participant_color,
-                  })
-                );
+                dispatch(setParticipant(p));
               }
               if (user.isHost === p.is_host) dispatch(setAnswers(p.answers));
-              dispatch(updateMod());
               ws.send({ type: wsActionTypes.GET_PARTICIPANTS });
+              dispatch(updateMod());
               break;
             case wsActionTypes.LEAVE_LQS:
               dispatch(updateMod());
@@ -95,7 +85,6 @@ const wsMiddleware =
               if (ws.isConnected()) ws.disconnect();
               break;
             case wsActionTypes.START_LQS:
-              dispatch(setTimeLeft(3));
               dispatch(updateMod());
               break;
             case wsActionTypes.END_LQS:
@@ -103,24 +92,21 @@ const wsMiddleware =
               if (ws.isConnected()) ws.disconnect();
               break;
             case wsActionTypes.COUNTDOWN:
-              dispatch(setTimeLeft(p.time_left));
+              dispatch(setCountDown(p));
               break;
             case wsActionTypes.DISTRIBUTE_QUESTION:
-              dispatch(setTimeLeft(5));
               dispatch(updateMod());
               break;
             case wsActionTypes.DISTRIBUTE_MEDIA:
-              dispatch(setTimeLeft(15));
               dispatch(updateMod());
               break;
             case wsActionTypes.DISTRIBUTE_OPTIONS:
-              dispatch(setTimeLeft(p));
               dispatch(setAnswers(null));
               dispatch(updateMod());
               break;
             case wsActionTypes.REVEAL_ANSWER:
-              dispatch(setTimeLeft(0));
               dispatch(setAnswers(p));
+              ws.send({ type: wsActionTypes.GET_PARTICIPANTS });
               dispatch(updateMod());
               break;
             case wsActionTypes.CONCLUDE:
@@ -129,6 +115,9 @@ const wsMiddleware =
               break;
             case wsActionTypes.GET_PARTICIPANTS:
               dispatch(setParticipants(p));
+              break;
+            case wsActionTypes.UPDATE_MARKS:
+              dispatch(setTotalMarks(p));
               break;
             case wsActionTypes.TOGGLE_LOCK:
               dispatch(updateMod());
@@ -162,7 +151,6 @@ const wsMiddleware =
         break;
 
       case "lqs/endLqs":
-        dispatch(setStatus(wsStatuses.ENDING));
         ws.send({ type: wsActionTypes.END_LQS });
         break;
 

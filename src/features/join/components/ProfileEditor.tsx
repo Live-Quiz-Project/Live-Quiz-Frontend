@@ -4,7 +4,7 @@ import {
   setParticipantDisplayColor,
   setParticipantDisplayEmoji,
   setParticipantDisplayName,
-} from "@/features/auth/store/slice";
+} from "@/features/auth/slice";
 import { checkLqs, setLqs } from "@/features/live/store/lqs-slice";
 import { isAxiosError } from "axios";
 import { CSSProperties, Dispatch, FormEvent, SetStateAction } from "react";
@@ -14,7 +14,7 @@ import FilledButton from "@/common/components/buttons/FilledButton";
 import CustomUserCard from "@/common/components/cards/CustomUserCard";
 import UserCard from "@/common/components/cards/UserCard";
 import wsStatuses from "@/features/live/utils/statuses";
-import { setStatus } from "@/features/live/store/mod-slice";
+import { setQuizTitle, setStatus } from "@/features/live/store/mod-slice";
 
 type Props = {
   style?: CSSProperties;
@@ -54,6 +54,7 @@ export default function ProfileEditor({ style }: Props) {
         code: res.code,
       })
     );
+    dispatch(setQuizTitle(res.quiz_title));
     dispatch(setStatus(res.status));
     if (!anon && auth.value.token) {
       dispatch(setParticipantDisplayName(auth.value.user.displayName));

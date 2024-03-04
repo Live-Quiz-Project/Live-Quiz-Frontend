@@ -1,127 +1,168 @@
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
-import { AiOutlineMessage, AiFillMessage } from "react-icons/ai";
 import { MathJax } from "better-react-mathjax";
+import { AiOutlineMessage, AiFillMessage } from "react-icons/ai";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
-import { useState } from "react";
+import { BiChevronLeft, BiSwim } from "react-icons/bi";
 
-export default function Choice() {
+type Props = {
+  q?: Question;
+  setCurSubQ?: Dispatch<SetStateAction<number>>;
+};
+
+export default function Choice({ q, setCurSubQ }: Props) {
   const mod = useTypedSelector((state) => state.mod);
+  const [question, setQuestion] = useState<Question>(
+    q ? q : mod.value.question!
+  );
   const [isQuestionExpanded, setQuestionExpanded] = useState<boolean>(false);
   const [isNoteExpanded, setNoteExpanded] = useState<boolean>(false);
   const [isNoteFirstOpened, setNoteFirstOpened] = useState<boolean>(true);
   const optionsContainerGridFormat =
-    mod.value.question!.layout === 0
+    question!.layout === 0
       ? `${
-          (mod.value.question!.options as ChoiceOption[]).length === 3
+          (question!.options as ChoiceOption[]).length === 3
             ? "grid-rows-3"
-            : (mod.value.question!.options as ChoiceOption[]).length === 4
+            : (question!.options as ChoiceOption[]).length === 4
             ? "grid-rows-4"
             : "grid-rows-10"
         } grid-flow-col auto-cols-fr auto-cols ${
-          (mod.value.question!.options as ChoiceOption[]).length % 5 === 1
+          (question!.options as ChoiceOption[]).length % 5 === 1
             ? "[&>*:nth-last-child(1)]:row-start-5"
-            : (mod.value.question!.options as ChoiceOption[]).length % 5 === 2
+            : (question!.options as ChoiceOption[]).length % 5 === 2
             ? "[&>*:nth-last-child(2)]:row-start-4"
-            : (mod.value.question!.options as ChoiceOption[]).length % 5 === 3
+            : (question!.options as ChoiceOption[]).length % 5 === 3
             ? "[&>*:nth-last-child(3)]:row-start-3"
-            : (mod.value.question!.options as ChoiceOption[]).length % 5 === 4
+            : (question!.options as ChoiceOption[]).length % 5 === 4
             ? "[&>*:nth-last-child(4)]:row-start-2"
             : null
         }`
-      : mod.value.question!.layout === 1
+      : question!.layout === 1
       ? `grid-cols-4 auto-rows-fr ${
-          (mod.value.question!.options as ChoiceOption[]).length % 2 === 1
+          (question!.options as ChoiceOption[]).length % 2 === 1
             ? "[&>*:nth-last-child(1)]:col-start-2"
             : ""
         }`
-      : mod.value.question!.layout === 2
+      : question!.layout === 2
       ? `grid-rows-4 grid-flow-col auto-cols-fr auto-cols ${
-          (mod.value.question!.options as ChoiceOption[]).length % 2 === 1
+          (question!.options as ChoiceOption[]).length % 2 === 1
             ? "[&>*:nth-last-child(1)]:row-start-2"
             : ""
         }`
       : `${
-          (mod.value.question!.options as ChoiceOption[]).length === 3
+          (question!.options as ChoiceOption[]).length === 3
             ? "grid-cols-3"
-            : (mod.value.question!.options as ChoiceOption[]).length === 4
+            : (question!.options as ChoiceOption[]).length === 4
             ? "grid-cols-4"
             : "grid-cols-10"
         } auto-rows-fr ${
-          (mod.value.question!.options as ChoiceOption[]).length % 5 === 1
+          (question!.options as ChoiceOption[]).length % 5 === 1
             ? "[&>*:nth-last-child(1)]:col-start-5"
-            : (mod.value.question!.options as ChoiceOption[]).length % 5 === 2
+            : (question!.options as ChoiceOption[]).length % 5 === 2
             ? "[&>*:nth-last-child(2)]:col-start-4"
-            : (mod.value.question!.options as ChoiceOption[]).length % 5 === 3
+            : (question!.options as ChoiceOption[]).length % 5 === 3
             ? "[&>*:nth-last-child(3)]:col-start-3"
-            : (mod.value.question!.options as ChoiceOption[]).length % 5 === 4
+            : (question!.options as ChoiceOption[]).length % 5 === 4
             ? "[&>*:nth-last-child(4)]:col-start-2"
             : null
         }`;
   const choiceButtonGridFormat =
-    mod.value.question!.layout === 0
+    question!.layout === 0
       ? `${
-          (mod.value.question!.options as ChoiceOption[]).length === 1
+          (question!.options as ChoiceOption[]).length === 1
             ? "row-span-10 !row-start-1"
-            : (mod.value.question!.options as ChoiceOption[]).length === 2
+            : (question!.options as ChoiceOption[]).length === 2
             ? "row-span-5 first:!row-start-1"
-            : (mod.value.question!.options as ChoiceOption[]).length === 3
+            : (question!.options as ChoiceOption[]).length === 3
             ? "row-span-1 first:!row-start-1"
-            : (mod.value.question!.options as ChoiceOption[]).length === 4
+            : (question!.options as ChoiceOption[]).length === 4
             ? "row-span-1 first:!row-start-1"
             : "row-span-2"
         }`
-      : mod.value.question!.layout === 1
-      ? (mod.value.question!.options as ChoiceOption[]).length === 1
+      : question!.layout === 1
+      ? (question!.options as ChoiceOption[]).length === 1
         ? "col-span-4 !col-start-1"
         : "col-span-2"
-      : mod.value.question!.layout === 2
-      ? (mod.value.question!.options as ChoiceOption[]).length === 1
+      : question!.layout === 2
+      ? (question!.options as ChoiceOption[]).length === 1
         ? "row-span-4 !row-start-1"
         : "row-span-2"
-      : (mod.value.question!.options as ChoiceOption[]).length === 1
+      : (question!.options as ChoiceOption[]).length === 1
       ? "col-span-10 !col-start-1"
-      : (mod.value.question!.options as ChoiceOption[]).length === 2
+      : (question!.options as ChoiceOption[]).length === 2
       ? "col-span-5 first:!col-start-1"
-      : (mod.value.question!.options as ChoiceOption[]).length === 3
+      : (question!.options as ChoiceOption[]).length === 3
       ? "col-span-1 first:!col-start-1"
-      : (mod.value.question!.options as ChoiceOption[]).length === 4
+      : (question!.options as ChoiceOption[]).length === 4
       ? "col-span-1 first:!col-start-1"
       : "col-span-2";
+
+  useEffect(() => {
+    if (q) {
+      setQuestion(q);
+    } else {
+      setQuestion(mod.value.question!);
+    }
+  }, [q]);
 
   return (
     <div
       className={`flex-1 grid gap-2 sm:gap-4 2xl:gap-[1vw] overflow-auto ${
-        isQuestionExpanded || isNoteExpanded
+        q
+          ? isQuestionExpanded || isNoteExpanded
+            ? "grid-rows-2"
+            : "grid-rows-[auto_auto_1fr]"
+          : isQuestionExpanded || isNoteExpanded
           ? "grid-rows-2"
           : "grid-rows-[auto_1fr]"
       }`}
     >
+      {q && !isNoteExpanded && !isQuestionExpanded && (
+        <div className="p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pb-0 text-denim">
+          <button
+            onClick={() => setCurSubQ && setCurSubQ(-1)}
+            className="flex bg-beige rounded-full px-2 py-1 xs:px-3 xs:py-1.5 items-center justify-center"
+          >
+            <BiChevronLeft className="-ml-[20%] size-[1.5em]" />
+            <BiSwim className="size-[1.5em]" />
+          </button>
+        </div>
+      )}
       <div
-        className={`relative grid items-start gap-x-[1em] h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pb-0 grid-rows-[1fr_auto] ${
-          isQuestionExpanded ? "grid-cols-[1fr_0fr]" : "grid-cols-[1fr_auto]"
+        className={`relative grid items-start gap-x-[1em] h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] grid-rows-[1fr_auto] ${
+          q
+            ? isQuestionExpanded || isNoteExpanded
+              ? "grid-cols-[1fr_0fr] !pb-0"
+              : "grid-cols-[1fr_auto] !py-0"
+            : isQuestionExpanded
+            ? "grid-cols-[1fr_0fr] !pb-0"
+            : "grid-cols-[1fr_auto] !pb-0"
         }`}
       >
         {!isNoteExpanded && (
           <button
             type="button"
             onClick={() => setQuestionExpanded((prev) => !prev)}
-            className={`grid grid-cols-[auto_1fr] gap-[1em] font-serif min-h-[2.75em] max-h-full ${
+            className={`group relative grid grid-cols-[auto_1fr] gap-[1em] font-serif min-h-[3em] max-h-full ${
               isQuestionExpanded
                 ? "col-span-2 h-full bg-white items-start outline outline-1 -m-[1em] xs:-my-[1em] xs:-mx-[1.25em] p-[1em] xs:py-[1em] xs:px-[1.25em] rounded-md sm:rounded-lg lg:rounded-xl 2xl:rounded-[1vw] z-1 overflow-auto"
                 : "items-center"
             }`}
           >
-            <div className="flex items-center h-[2.75em] font-serif">
+            <span className="opacity-0 group-hover:opacity-100 absolute w-full h-full bg-white rounded-full blur-lg transition-all duration-300" />
+            <div className="flex items-center h-[3em] font-serif">
               <p className="translate-x-1/4 text-[2.25em] !-rotate-[25deg] text-denim">
                 ?
               </p>
             </div>
             <MathJax
-              className={`text-left text-[1.75em] w-full leading-tight ${
-                isQuestionExpanded ? "pt-[0.15em]" : "truncate"
+              className={`z-1 h-full tracking-tight font-medium text-left text-[1.75em] w-full ${
+                isQuestionExpanded
+                  ? "pt-[0.1em] leading-normal"
+                  : "truncate leading-[1.75]"
               }`}
             >
-              {mod.value.question!.content}
+              {question!.content}
             </MathJax>
           </button>
         )}
@@ -132,61 +173,69 @@ export default function Choice() {
               setNoteExpanded((prev) => !prev);
               setNoteFirstOpened(false);
             }}
-            className={`grid gap-[1em] font-serif min-h-[2.75em] max-h-full ${
+            className={`group grid gap-[1em] font-serif min-h-[3em] max-h-full ${
               isNoteExpanded
                 ? "grid-cols-[1fr_auto] col-span-2 h-full bg-white items-start outline outline-1 -m-[1em] xs:-my-[1em] xs:-mx-[1.25em] p-[1em] xs:py-[1em] xs:px-[1.25em] rounded-md sm:rounded-lg lg:rounded-xl 2xl:rounded-[1vw] z-1 overflow-auto"
                 : "grid-cols-1 items-center"
             }`}
           >
             {isNoteExpanded && (
-              <MathJax className="text-left text-[1.75em] w-full leading-tight">
-                {mod.value.question!.note}
+              <MathJax
+                className={`h-full tracking-tight font-medium text-left text-[1.75em] w-full ${
+                  isNoteExpanded
+                    ? "pt-[0.1em] leading-normal"
+                    : "truncate leading-[1.75]"
+                }`}
+              >
+                {question!.note}
               </MathJax>
             )}
-            <div className="relative w-[2em] h-[2.75em] text-denim flex items-center">
+            <div className="relative w-[2em] h-[3em] text-denim flex items-center">
               {isNoteExpanded ? (
-                <AiFillMessage className="w-full h-[2em]" />
+                <AiFillMessage className="group-hover:scale-110 w-full h-[2em] transition-all duration-200" />
               ) : (
-                <AiOutlineMessage className="w-full h-[2em]" />
+                <AiOutlineMessage className="group-hover:scale-110 w-full h-[2em] transition-all duration-200" />
               )}
-              {mod.value.question!.note !== "" && isNoteFirstOpened && (
+              {question!.note !== "" && isNoteFirstOpened && (
                 <span className="absolute block !p-0 top-1 -right-1 w-4 h-4 rounded-full bg-scarlet" />
               )}
             </div>
           </button>
         )}
-        {mod.value.question!.selectMax > 1 && (
-          <p>
+        {question!.selectMax > 1 && (
+          <p className="col-span-2">
             &#42;&nbsp;
-            {mod.value.question!.selectMax === mod.value.question!.selectMin
-              ? `Select exactly ${mod.value.question!.selectMax} choices`
-              : `Select at least ${mod.value.question!.selectMin} and up to ${
-                  mod.value.question!.selectMax
+            {question!.selectMax === question!.selectMin
+              ? `Select exactly ${question!.selectMax} choices`
+              : `Select at least ${question!.selectMin} and up to ${
+                  question!.selectMax
                 } choices`}
           </p>
         )}
       </div>
-      <div className="w-full h-full overflow-auto p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0">
-        <div
-          className={`grid justify-items-center h-full w-full gap-2 sm:gap-4 2xl:gap-[1vw] tracking-tight ${optionsContainerGridFormat}`}
-        >
-          {mod.value.question!.options.map((option, i) => (
-            <ChoiceButton
-              key={(option as ChoiceOption).id}
-              className={`text-[1.25em] p-2 sm:p-4 2xl:p-[0.6em] ${choiceButtonGridFormat}`}
-              style={{ backgroundColor: (option as ChoiceOption).color }}
-              areDetailsShown
-              disabled
-            >
-              <ChoiceButton.Icon>
-                <p className="font-light">{String.fromCharCode(65 + i)}&#46;</p>
-              </ChoiceButton.Icon>
-              <ChoiceButton.Content>
-                {(option as ChoiceOption).content}
-              </ChoiceButton.Content>
-            </ChoiceButton>
-          ))}
-        </div>
+      <div
+        className={`w-full h-full overflow-auto p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 grid justify-items-center gap-2 sm:gap-4 2xl:gap-[1vw] tracking-tight ${optionsContainerGridFormat}`}
+      >
+        {(question!.options as ChoiceOption[]).map((option, i) => (
+          <ChoiceButton
+            key={option.id}
+            className={`text-[1.25em] xs:text-[1.5em] p-2 sm:p-4 2xl:p-[0.6em] ${choiceButtonGridFormat}`}
+            style={{ backgroundColor: option.color }}
+            areDetailsShown
+            disabled
+          >
+            <ChoiceButton.Icon>
+              <p className="text-[1em] font-light">
+                {String.fromCharCode(65 + i)}&#46;
+              </p>
+            </ChoiceButton.Icon>
+            <ChoiceButton.Content>
+              <MathJax className="text-[1em] tracking-tight font-medium">
+                {option.content}
+              </MathJax>
+            </ChoiceButton.Content>
+          </ChoiceButton>
+        ))}
       </div>
     </div>
   );

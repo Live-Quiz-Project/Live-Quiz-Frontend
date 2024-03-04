@@ -42,7 +42,11 @@ export default function HostLiveQuiz() {
   }
 
   if (mod.value.status === wsStatuses.ANSWERING) {
-    if (!mod.value.question || !mod.value.question.options) return null;
+    if (
+      !mod.value.question ||
+      !(mod.value.question.options || mod.value.question.subquestions)
+    )
+      return null;
     return <OnAnswering />;
   }
 

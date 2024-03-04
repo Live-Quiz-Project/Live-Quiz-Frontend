@@ -21,7 +21,7 @@ export default function HostLobby() {
   const { code } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<StoreDispatch>();
-  const lobby = useTypedSelector((state) => state.lobby);
+  const participants = useTypedSelector((state) => state.participants);
   const lqs = useTypedSelector((state) => state.lqs);
   const mod = useTypedSelector((state) => state.mod);
   const [kickedParticipant, setKickedParticipant] = useState<User | null>(null);
@@ -38,7 +38,6 @@ export default function HostLobby() {
 
     dispatch(connect());
     dispatch(resetMod());
-    dispatch(trigger({ type: wsActionTypes.GET_PARTICIPANTS }));
 
     window.addEventListener("resize", onResize);
 
@@ -54,8 +53,8 @@ export default function HostLobby() {
   }, [mod.value.status]);
 
   useEffect(() => {
-    if (lobby.value.participants && lobby.value.participants.length > 0) {
-      let newParticipants = [...lobby.value.participants];
+    if (participants.value && participants.value.length > 0) {
+      let newParticipants = [...participants.value];
       newParticipants.sort((a, b) => {
         if (isAscending) {
           return a.displayName.localeCompare(b.displayName);
@@ -67,7 +66,7 @@ export default function HostLobby() {
     } else {
       setDisplayParticipants([]);
     }
-  }, [lobby.value.participants]);
+  }, [participants.value]);
 
   function onSort(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -126,14 +125,14 @@ export default function HostLobby() {
             className="flex items-center justify-center"
           >
             {mod.value.locked ? (
-              <FaLock className="w-4 md:w-5 2xl:w-[1.125vw] h-4 md:h-5 2xl:h-[1.125vw]" />
+              <FaLock className="w-4 md:w-5 2xl:w-[1.25vw] h-4 md:h-5 2xl:h-[1.25vw]" />
             ) : (
-              <FaUnlockKeyhole className="w-4 md:w-5 2xl:w-[1.125vw] h-4 md:h-5 2xl:h-[1.125vw]" />
+              <FaUnlockKeyhole className="w-4 md:w-5 2xl:w-[1.25vw] h-4 md:h-5 2xl:h-[1.25vw]" />
             )}
           </button>
           <div className="flex items-center space-x-1 h-full">
-            <PiPersonFill className="w-5 md:w-6 2xl:w-[1.125vw] h-5 md:h-6 2xl:h-[1.125vw]" />
-            <p className="font-sans-serif text-header-2 2xl:text-[1.125vw] leading-none">
+            <PiPersonFill className="w-5 md:w-6 2xl:w-[1.25vw] h-5 md:h-6 2xl:h-[1.25vw]" />
+            <p className="font-sans-serif text-header-2 2xl:text-[1.25vw] leading-none">
               {displayParticipants.length}
             </p>
           </div>
@@ -142,11 +141,11 @@ export default function HostLobby() {
             onClick={onSort}
             className="flex items-center space-x-1 font-serif h-full"
           >
-            <p className="text-header-1 2xl:text-[1.125vw] leading-none">Aa</p>
+            <p className="text-header-1 2xl:text-[1.25vw] leading-none">Aa</p>
             <FiArrowDown
               className={`${
                 isAscending && "rotate-180"
-              } w-4 md:w-6 2xl:w-[1.125vw] h-4 md:h-6 2xl:h-[1.125vw] transition-all duration-300`}
+              } w-4 md:w-6 2xl:w-[1.25vw] h-4 md:h-6 2xl:h-[1.25vw] transition-all duration-300`}
             />
           </button>
         </div>
@@ -213,7 +212,7 @@ export default function HostLobby() {
       </div>
       <div className="bg-dune h-16 xs:h-20 md:h-28 2xl:h-[10dvh] grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center px-[0.5em] xs:px-[1em] md:px-[1.5em] gap-[0.5em] xs:gap-[1em] md:gap-[1.5em] font-sans-serif text-body-1 md:text-header-2 2xl:text-[1vw] text-center text-beige">
         <OutlinedButton
-          className="self-center place-self-start border-beige/10 hover:bg-scarlet bg-sienna xs:bg-transparent !border xs:border 2xl:!py-[0.5vw] 2xl:!px-[1vw] h-fit w-max transition-all duration-300"
+          className="self-center place-self-start border-beige/10 hover:bg-scarlet bg-sienna xs:bg-transparent !border xs:border !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] h-fit w-max transition-all duration-300"
           onClick={onCancel}
         >
           Cancel
@@ -222,7 +221,7 @@ export default function HostLobby() {
           {mod.value.quizTitle}
         </p>
         <FilledButton
-          className="self-center place-self-end group bg-beige/10 hover:bg-jordy-blue 2xl:!py-[0.5vw] 2xl:!px-[1vw] h-fit w-max inline-flex justify-center items-center transition-all duration-300 hover:text-dune"
+          className="self-center place-self-end group bg-beige/10 hover:bg-jordy-blue !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] h-fit w-max inline-flex justify-center items-center transition-all duration-300 hover:text-dune"
           onClick={onStartQuiz}
         >
           Start Live Quiz
@@ -230,7 +229,10 @@ export default function HostLobby() {
         </FilledButton>
       </div>
       {kickedParticipant && (
-        <BaseModal setOpen={setKickedParticipant} className="space-y-6">
+        <BaseModal
+          setOpen={setKickedParticipant}
+          className="space-y- !bg-beige"
+        >
           <h1 className="text-header-1 truncate">
             Are you sure you want to kick&nbsp;
             <em>{kickedParticipant.displayName}</em>&nbsp;?
@@ -239,7 +241,7 @@ export default function HostLobby() {
             <FilledButton
               type="button"
               onClick={() => setKickedParticipant(null)}
-              className="border border-regent-gray box-border text-body-1 truncate"
+              className="border border-dune text-dune hover:bg-scarlet/70 hover:text-beige hover:border-transparent text-body-1 truncate transition-all duration-300"
             >
               Not now
             </FilledButton>
@@ -247,7 +249,7 @@ export default function HostLobby() {
               type="button"
               value={kickedParticipant.id}
               onClick={onKickParticipant}
-              className="bg-sienna text-white text-body-1 truncate"
+              className="bg-denim text-white text-body-1 truncate"
             >
               Kick&nbsp;
               <em>{kickedParticipant.displayName}</em>
