@@ -1,4 +1,4 @@
-import EmojiLabel from "@/common/utils/emoji_labels";
+import EmojiLabel from "@/common/utils/emoji-labels";
 
 const Emoji = [
   {

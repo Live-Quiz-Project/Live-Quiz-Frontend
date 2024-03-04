@@ -11,7 +11,7 @@ export default function OnStarting() {
 
   useEffect(() => {
     if (timeLeft === 3 && mod.value.status === wsStatuses.STARTING) {
-      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.5), 0.5))();
+      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.1), 1))();
     }
 
     return () => {
@@ -21,7 +21,7 @@ export default function OnStarting() {
 
   useEffect(() => {
     if (mod.value.timeLeft) {
-      setTimeLeft(mod.value.timeLeft - 0.5);
+      setTimeLeft(mod.value.timeLeft - 0.1);
     }
   }, [mod.value.timeLeft]);
 
@@ -38,14 +38,14 @@ export default function OnStarting() {
           <div className="space-y-2 self-start">
             <p className="leading-none">Going live in...</p>
             <p className="font-sans-serif leading-none">
-              {Math.ceil(timeLeft + 0.5)}
+              {Math.ceil(timeLeft + 0.1)}
             </p>
           </div>
         </div>
       </Layout.Content>
       <Layout.Footer className="flex justify-end items-center gap-[1vw] sm:gap-[0.45vw] px-[5%] 2xl:px-[2vw]">
-        <PiPersonFill className="w-[1.15em] h-[1.15em] xs:w-[1.25em] xs:h-[1.25em] sm:w-[1.75em] sm:h-[1.75em]" />
-        <p className="text-[0.75em] xs:text-[1.15em] md:text-[1.5em] leading-none">
+        <PiPersonFill className="w-5 md:w-6 2xl:w-[1.25vw] h-5 md:h-6 2xl:h-[1.25vw]" />
+        <p className="text-[1em] xs:text-[1.15em] md:text-[1.5em] leading-none">
           {mod.value.participantCount}
         </p>
       </Layout.Footer>

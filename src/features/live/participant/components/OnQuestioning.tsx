@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { MathJax } from "better-react-mathjax";
 import ProgressBarTimer from "@/common/components/ProgressBarTimer";
 import NumberedTimer from "@/common/components/NumberedTimer";
+import QuestionTypesEnum from "@/common/utils/question-types";
 
 export default function OnQuestioning() {
   const mod = useTypedSelector((state) => state.mod);
@@ -13,7 +14,7 @@ export default function OnQuestioning() {
 
   useEffect(() => {
     if (timeLeft === 5 && mod.value.status === wsStatuses.QUESTIONING) {
-      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.5), 1))();
+      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.1), 1))();
     }
 
     return () => {
@@ -23,7 +24,7 @@ export default function OnQuestioning() {
 
   useEffect(() => {
     if (mod.value.timeLeft) {
-      setTimeLeft(mod.value.timeLeft - 0.5);
+      setTimeLeft(mod.value.timeLeft - 0.1);
     }
   }, [mod.value.timeLeft, timeLeft]);
 
@@ -51,7 +52,9 @@ export default function OnQuestioning() {
             <p className="text-[1.5em]">Question:</p>
           </div>
           <MathJax className="text-[2.5em] leading-tight font-medium tracking-tight text-center self-start">
-            {mod.value.question!.content}
+            {mod.value.question!.type === QuestionTypesEnum.FILL_BLANK
+              ? "Fill in the blanks"
+              : mod.value.question!.content}
           </MathJax>
         </div>
       </Layout.Content>

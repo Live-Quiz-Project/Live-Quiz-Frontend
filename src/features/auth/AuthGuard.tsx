@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Navigate, useSearchParams } from "react-router-dom";
-import { logIn } from "@/features/auth/store/slice";
+import { logIn } from "@/features/auth/slice";
 import { http } from "@/common/services/axios";
 import { resetLqs } from "@/features/live/store/lqs-slice";
 import { resetMod } from "@/features/live/store/mod-slice";
@@ -57,6 +57,7 @@ export default function AuthGuard() {
             displayName: data.display_name,
             displayEmoji: data.display_emoji,
             displayColor: data.display_color,
+            marks: 0,
           },
           anonymous: false,
         };

@@ -11,7 +11,7 @@ import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import {
   resetParticipant,
   resetParticipantDisplayData,
-} from "@/features/auth/store/slice";
+} from "@/features/auth/slice";
 
 export default function Join() {
   const auth = useTypedSelector((state) => state.auth);
@@ -71,7 +71,7 @@ export default function Join() {
   }
 
   return (
-    <div className="flex items-center justify-center h-dscreen text-white bg-denim w-full">
+    <div className="flex items-center justify-center h-dvh text-white bg-denim w-full">
       <form
         onSubmit={onNext}
         className="relative w-full h-full overflow-hidden"

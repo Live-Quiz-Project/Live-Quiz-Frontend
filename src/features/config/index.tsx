@@ -9,8 +9,8 @@ import {
   setLqs,
 } from "@/features/live/store/lqs-slice";
 import { resetMod } from "@/features/live/store/mod-slice";
-import { resetLobby } from "@/features/lobby/store/slice";
-import { resetParticipant } from "@/features/auth/store/slice";
+import { resetParticipants } from "@/features/live/store/participants-slice";
+import { resetParticipant } from "@/features/auth/slice";
 import FilledButton from "@/common/components/buttons/FilledButton";
 import BaseAccordion from "@/common/components/accordions/BaseAccordion";
 import BaseSwitch from "@/common/components/switches/BaseSwitch";
@@ -20,14 +20,14 @@ export default function Config() {
   const navigate = useNavigate();
   const dispatch = useDispatch<StoreDispatch>();
   const [viewLeaderboardDuringQuestions, setViewLeaderboardDuringQuestions] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [viewLeaderboardAfterQuestions, setViewLeaderboardAfterQuestions] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [shuffleQuestions, setShuffleQuestions] = useState<boolean>(false);
   const [shuffleOptions, setShuffleOptions] = useState<boolean>(false);
   const [colorlessOptions, setColorlessOptions] = useState<boolean>(false);
-  const [reanswer, setReanswer] = useState<boolean>(false);
-  const [showCorrectAnswer, setShowCorrectAnswer] = useState<boolean>(false);
+  const [reanswer, setReanswer] = useState<boolean>(true);
+  const [showCorrectAnswers, setShowCorrectAnswers] = useState<boolean>(true);
   const { quizId } = useParams();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function Config() {
     dispatch(resetParticipant());
     dispatch(resetMod());
     dispatch(resetLqs());
-    dispatch(resetLobby());
+    dispatch(resetParticipants());
   }, []);
 
   async function onStart(e: FormEvent<HTMLButtonElement>) {
@@ -58,7 +58,7 @@ export default function Config() {
           },
           option: {
             colorless: colorlessOptions,
-            show_correct_answer: showCorrectAnswer,
+            show_correct_answer: showCorrectAnswers,
           },
         },
       })
@@ -90,12 +90,12 @@ export default function Config() {
         </div>
         <div className="w-full sm:w-3/4 xl:w-1/2 h-full space-y-2 font-serif overflow-auto">
           <BaseAccordion init={true}>
-            <BaseAccordion.Head className="flex items-center text-header-2 font-semibold w-full h-10 overflow-hidden">
+            <BaseAccordion.Head className="flex items-center text-header-3 xs:text-header-2 font-semibold w-full h-10 overflow-hidden">
               <p className="inline truncate">
                 Participants can view leaderboard
               </p>
             </BaseAccordion.Head>
-            <BaseAccordion.Body className="text-header-3 indent-4 font-thin">
+            <BaseAccordion.Body className="text-body-1 xs:text-header-3 indent-4 font-thin">
               <div className="flex items-center justify-between py-1 space-x-4">
                 <p className="truncate">During questions</p>
                 <BaseSwitch
@@ -115,10 +115,41 @@ export default function Config() {
             </BaseAccordion.Body>
           </BaseAccordion>
           <BaseAccordion init={true}>
-            <BaseAccordion.Head className="flex items-center text-header-2 font-semibold w-full h-10 overflow-hidden">
+            <BaseAccordion.Head className="flex items-center text-header-3 xs:text-header-2 font-semibold w-full h-10 overflow-hidden">
+              <p className="inline truncate">Options and Answer</p>
+            </BaseAccordion.Head>
+            <BaseAccordion.Body className="text-body-1 xs:text-header-3 indent-4 font-thin">
+              <div className="flex items-center justify-between py-1 space-x-4">
+                <p className="truncate">Can be reanswered</p>
+                <BaseSwitch
+                  checked={reanswer}
+                  setChecked={setReanswer}
+                  className="!h-6"
+                />
+              </div>
+              <div className="flex items-center justify-between py-1 space-x-4">
+                <p className="truncate">Show correct answers and marks</p>
+                <BaseSwitch
+                  checked={showCorrectAnswers}
+                  setChecked={setShowCorrectAnswers}
+                  className="!h-6"
+                />
+              </div>
+              <div className="flex items-center justify-between py-1 space-x-4">
+                <p className="truncate">Colorless options</p>
+                <BaseSwitch
+                  checked={colorlessOptions}
+                  setChecked={setColorlessOptions}
+                  className="!h-6"
+                />
+              </div>
+            </BaseAccordion.Body>
+          </BaseAccordion>
+          <BaseAccordion init={true}>
+            <BaseAccordion.Head className="flex items-center text-header-3 xs:text-header-2 font-semibold w-full h-10 overflow-hidden">
               <p className="inline truncate">Shuffle</p>
             </BaseAccordion.Head>
-            <BaseAccordion.Body className="text-header-3 indent-4 font-thin">
+            <BaseAccordion.Body className="text-body-1 xs:text-header-3 indent-4 font-thin">
               <div className="flex items-center justify-between py-1 space-x-4">
                 <p className="truncate">Shuffle questions</p>
                 <BaseSwitch
@@ -137,40 +168,9 @@ export default function Config() {
               </div>
             </BaseAccordion.Body>
           </BaseAccordion>
-          <BaseAccordion init={true}>
-            <BaseAccordion.Head className="flex items-center text-header-2 font-semibold w-full h-10 overflow-hidden">
-              <p className="inline truncate">Options and Answer</p>
-            </BaseAccordion.Head>
-            <BaseAccordion.Body className="text-header-3 indent-4 font-thin">
-              <div className="flex items-center justify-between py-1 space-x-4">
-                <p className="truncate">Colorless options</p>
-                <BaseSwitch
-                  checked={colorlessOptions}
-                  setChecked={setColorlessOptions}
-                  className="!h-6"
-                />
-              </div>
-              <div className="flex items-center justify-between py-1 space-x-4">
-                <p className="truncate">Can be reanswered</p>
-                <BaseSwitch
-                  checked={reanswer}
-                  setChecked={setReanswer}
-                  className="!h-6"
-                />
-              </div>
-              <div className="flex items-center justify-between py-1 space-x-4">
-                <p className="truncate">Show correct answer and mark</p>
-                <BaseSwitch
-                  checked={showCorrectAnswer}
-                  setChecked={setShowCorrectAnswer}
-                  className="!h-6"
-                />
-              </div>
-            </BaseAccordion.Body>
-          </BaseAccordion>
         </div>
         <FilledButton
-          className="self-start !px-12 bg-sienna w-fit text-header-2"
+          className="self-start !px-12 bg-sienna w-fit text-header-3 xs:text-header-2"
           onClick={onStart}
         >
           Start

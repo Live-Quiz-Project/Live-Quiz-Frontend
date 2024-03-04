@@ -7,6 +7,7 @@ import { MathJax } from "better-react-mathjax";
 import ProgressBarTimer from "@/common/components/ProgressBarTimer";
 import NumberedTimer from "@/common/components/NumberedTimer";
 import { PiPersonFill } from "react-icons/pi";
+import QuestionTypesEnum from "@/common/utils/question-types";
 
 export default function OnQuestioning() {
   const mod = useTypedSelector((state) => state.mod);
@@ -14,7 +15,7 @@ export default function OnQuestioning() {
 
   useEffect(() => {
     if (timeLeft === 5 && mod.value.status === wsStatuses.QUESTIONING) {
-      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.5), 1))();
+      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.1), 1))();
     }
 
     return () => {
@@ -23,10 +24,8 @@ export default function OnQuestioning() {
   }, []);
 
   useEffect(() => {
-    console.log(mod.value.timeLeft, timeLeft);
-
     if (mod.value.timeLeft) {
-      setTimeLeft(mod.value.timeLeft - 0.5);
+      setTimeLeft(mod.value.timeLeft - 0.1);
     }
   }, [mod.value.timeLeft, timeLeft]);
 
@@ -51,10 +50,12 @@ export default function OnQuestioning() {
             <p className="absolute -left-1/4 2xl:-left-[0.75em] top-1/2 -translate-y-1/2 text-denim text-[3em] -rotate-[25deg]">
               ?
             </p>
-            <p className="text-[1.5em]">Question:</p>
+            <p className="text-[1.5em]">Question&#58;</p>
           </div>
           <MathJax className="text-[2.5em] leading-tight font-medium tracking-tight text-center self-start">
-            {mod.value.question!.content}
+            {mod.value.question!.type === QuestionTypesEnum.FILL_BLANK
+              ? "Fill in the blanks"
+              : mod.value.question!.content}
           </MathJax>
         </div>
       </Layout.Content>
@@ -71,8 +72,8 @@ export default function OnQuestioning() {
           />
         </div>
         <div className="flex justify-end items-center gap-[1vw] sm:gap-[0.45vw]">
-          <PiPersonFill className="w-[1.15em] h-[1.15em] xs:w-[1.25em] xs:h-[1.25em] sm:w-[1.75em] sm:h-[1.75em]" />
-          <p className="text-[0.75em] xs:text-[1.15em] md:text-[1.5em] leading-none">
+          <PiPersonFill className="w-5 md:w-6 2xl:w-[1.25vw] h-5 md:h-6 2xl:h-[1.25vw]" />
+          <p className="text-[1em] xs:text-[1.15em] md:text-[1.5em] leading-none">
             {mod.value.participantCount}
           </p>
         </div>

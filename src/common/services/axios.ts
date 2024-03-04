@@ -1,4 +1,4 @@
-import { logOut, refreshToken } from "@/features/auth/store/slice";
+import { logOut, refreshToken } from "@/features/auth/slice";
 import axios, {
   AxiosError,
   AxiosResponse,

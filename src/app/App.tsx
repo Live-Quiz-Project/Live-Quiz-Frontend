@@ -12,11 +12,11 @@ export default function App() {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <Suspense fallback={<Loading />}>
-          <MathJaxContext>
+        <MathJaxContext>
+          <Suspense fallback={<Loading />}>
             <RouterProvider router={router} />
-          </MathJaxContext>
-        </Suspense>
+          </Suspense>
+        </MathJaxContext>
       </PersistGate>
     </Provider>
   );

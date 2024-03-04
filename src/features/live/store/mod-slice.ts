@@ -46,6 +46,11 @@ export const mod = createSlice({
     setTimeLeft: (state, action: PayloadAction<number>) => {
       state.value.timeLeft = action.payload;
     },
+    setCountDown: (state, action: PayloadAction<any>) => {
+      state.value.timeLeft = action.payload.time_left;
+      state.value.curQ = action.payload.current_question;
+      state.value.status = action.payload.status;
+    },
     setAnswers: (state, action: PayloadAction<any>) => {
       state.value.answers = action.payload;
     },
@@ -111,6 +116,7 @@ export const mod = createSlice({
           selectMin: payloadQuestion.select_min,
           selectMax: payloadQuestion.select_max,
           options: payloadQuestion.options,
+          subquestions: payloadQuestion.subquestions,
         };
         state.value.question = newQuestion;
       }
@@ -123,11 +129,10 @@ export const updateMod = createAsyncThunk(
   async (_, { getState }) => {
     const { auth } = getState() as StoreRootState;
     const {
-      user: { isHost },
       participant: { code },
     } = auth.value;
     try {
-      const { data } = await http.get(`/live/${code}/mod?is_host=${isHost}`);
+      const { data } = await http.get(`/live/${code}/mod`);
       return data;
     } catch (error) {
       return error;
@@ -138,6 +143,7 @@ export const updateMod = createAsyncThunk(
 export const {
   setQuizTitle,
   setTimeLeft,
+  setCountDown,
   setAnswers,
   setStatus,
   resetMod,

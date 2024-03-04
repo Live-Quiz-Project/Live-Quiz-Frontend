@@ -9,6 +9,7 @@ import {
 
 type Props = {
   className?: string;
+  id?: string;
   style?: CSSProperties;
   value?: string;
   onKeyPress?: (e: KeyboardEvent<HTMLSpanElement>) => void;
@@ -22,6 +23,7 @@ type Props = {
 
 export default function EditableLabel({
   className = "",
+  id,
   style,
   value = "",
   onChange,
@@ -37,12 +39,6 @@ export default function EditableLabel({
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.textContent = value;
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(inputRef.current);
-      range.collapse(false);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
     }
   }, [value]);
 
@@ -53,6 +49,7 @@ export default function EditableLabel({
     >
       <span
         ref={inputRef}
+        id={id}
         contentEditable={!disabled}
         onFocus={(e) => {
           onFocus && onFocus(e);

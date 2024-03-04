@@ -10,7 +10,7 @@ export default function OnStarting() {
 
   useEffect(() => {
     if (timeLeft === 3 && mod.value.status === wsStatuses.STARTING) {
-      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.5), 1))();
+      (async () => setTimeout(() => setTimeLeft(timeLeft - 0.1), 1))();
     }
 
     return () => {
@@ -20,7 +20,7 @@ export default function OnStarting() {
 
   useEffect(() => {
     if (mod.value.timeLeft) {
-      setTimeLeft(mod.value.timeLeft - 0.5);
+      setTimeLeft(mod.value.timeLeft - 0.1);
     }
   }, [mod.value.timeLeft]);
 
@@ -37,7 +37,7 @@ export default function OnStarting() {
           <div className="space-y-2 self-start">
             <p className="leading-none">Going live in...</p>
             <p className="font-sans-serif leading-none">
-              {Math.ceil(timeLeft + 0.5)}
+              {Math.ceil(timeLeft + 0.1)}
             </p>
           </div>
         </div>
