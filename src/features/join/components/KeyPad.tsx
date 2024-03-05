@@ -72,7 +72,7 @@ export default function KeyPad({
 
   useEffect(() => {
     if (readQr) {
-      const code = "http://localhost:3000/AK1004/join".replace(
+      const code = readQr.replace(
         new RegExp(`${import.meta.env.VITE_BASE_URL}/(.*)/join`),
         "$1"
       );
