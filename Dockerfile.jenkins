@@ -13,4 +13,4 @@ RUN corepack enable
 EXPOSE 3000
 
 # Start the development server
-CMD ["pnpm", "dev","--host","0.0.0.0"]
+CMD ["pnpm","vite","serve","--host","0.0.0.0"]
