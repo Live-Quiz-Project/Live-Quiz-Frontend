@@ -103,7 +103,7 @@ export default function OnMedia() {
                 }}
                 className="text-body-1 md:text-header-2 2xl:text-[1vw] bg-denim !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] w-full transition-all duration-300"
               >
-                Skip
+                Next
               </FilledButton>
               <OutlinedButton
                 type="button"
@@ -138,7 +138,7 @@ export default function OnMedia() {
           }}
           className="hidden sm:block text-body-1 md:text-header-2 2xl:text-[1vw] bg-denim !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] w-full transition-all duration-300"
         >
-          Skip
+          Next
         </FilledButton>
         <div className="flex justify-end items-center gap-[1vw] sm:gap-[0.45vw]">
           <PiPersonFill className="w-5 md:w-6 2xl:w-[1.25vw] h-5 md:h-6 2xl:h-[1.25vw]" />

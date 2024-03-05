@@ -179,7 +179,7 @@ export default function OnAnswering() {
                   }}
                   className="text-body-1 md:text-header-2 2xl:text-[1vw] bg-denim !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] w-full transition-all duration-300"
                 >
-                  Skip
+                  Next
                 </FilledButton>
                 <OutlinedButton
                   type="button"
@@ -214,7 +214,7 @@ export default function OnAnswering() {
             }}
             className="hidden sm:block text-body-1 md:text-header-2 2xl:text-[1vw] bg-denim !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] w-full transition-all duration-300"
           >
-            Skip
+            Next
           </FilledButton>
           <div className="h-full flex flex-col items-center justify-evenly gap-[1vw] sm:gap-[0.4vw]">
             {mod.value.question!.type !== QuestionTypesEnum.POOL && (
