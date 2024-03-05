@@ -8,10 +8,11 @@ import { FaCheck, FaQuestion, FaXmark } from "react-icons/fa6";
 
 type Props = {
   onSubmit: (e: FormEvent<HTMLInputElement>, opt: ChoiceOption) => void;
+  required?: boolean;
   q?: Question;
 };
 
-export default function Unanswered({ onSubmit, q }: Props) {
+export default function Unanswered({ onSubmit, q, required }: Props) {
   const mod = useTypedSelector((state) => state.mod);
   const [question, setQuestion] = useState<Question>(
     q ? q : mod.value.question!
@@ -208,6 +209,11 @@ export default function Unanswered({ onSubmit, q }: Props) {
               )}
             </div>
           </button>
+        )}
+        {required && (
+          <p className="col-span-3 text-scarlet animate-bounce">
+            &#42;&nbsp;This question is required to get to the next one.
+          </p>
         )}
       </div>
       <div

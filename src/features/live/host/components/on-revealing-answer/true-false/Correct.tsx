@@ -4,16 +4,24 @@ import { FaCheck, FaXmark } from "react-icons/fa6";
 import BaseAccordion from "@/common/components/accordions/BaseAccordion";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
 
-export default function Correct() {
+type Props = {
+  a?: ChoiceOption;
+};
+
+export default function Correct({ a }: Props) {
   const mod = useTypedSelector((state) => state.mod);
   const [isExpanded, setExpanded] = useState<boolean>(true);
-  const [answer, setAnswer] = useState<ChoiceOption>({} as ChoiceOption);
+  const [answer, setAnswer] = useState<ChoiceOption>(
+    a ? a : (mod.value.answers as ChoiceOption[])[0]
+  );
 
   useEffect(() => {
-    setAnswer(
-      (mod.value.answers as ChoiceOption[]).filter((a) => a.correct)[0]
-    );
-  }, [mod.value.answers]);
+    if (a) {
+      setAnswer(a);
+    } else {
+      setAnswer((mod.value.answers as ChoiceOption[])[0]);
+    }
+  }, [a]);
 
   return (
     <div

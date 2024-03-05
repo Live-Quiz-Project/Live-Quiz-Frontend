@@ -1,23 +1,51 @@
 import { MathJax } from "better-react-mathjax";
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import BaseAccordion from "@/common/components/accordions/BaseAccordion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
 
-export default function Matching() {
+type Props = {
+  className?: string;
+  q?: Question;
+  a?: MatchingAnswer[];
+};
+
+export default function Matching({ className = "", q, a }: Props) {
   const mod = useTypedSelector((state) => state.mod);
+  const [question, setQuestion] = useState<Question>(
+    q ? q : mod.value.question!
+  );
+  const [answers, setAnswers] = useState<MatchingAnswer[]>(
+    a ? a : mod.value.answers
+  );
   const [isExpanded, setExpanded] = useState<boolean>(true);
   const [cur, setCur] = useState<number>(0);
 
+  useEffect(() => {
+    if (q) {
+      setQuestion(q);
+    } else {
+      setQuestion(mod.value.question!);
+    }
+
+    if (a) {
+      setAnswers(a);
+    } else {
+      setAnswers(mod.value.answers);
+    }
+  }, [q, a]);
+
   return (
-    <div className="bg-quartz grid grid-rows-[auto_1fr] gap-[1em] justify-items-center items-center w-full h-full overflow-auto">
+    <div
+      className={`bg-quartz grid grid-rows-[auto_1fr] gap-[1em] justify-items-center items-center w-full h-full overflow-auto ${className}`}
+    >
       <div className="grid grid-cols-[auto_1fr] gap-[1em] xs:gap-[1.5em] items-center font-serif overflow-auto p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pb-0">
         <div className="flex items-center h-[3em] truncate w-[115%]">
           <p className="text-[2.25em] !-rotate-[25deg] text-denim">A</p>
         </div>
         <MathJax className="tracking-tight font-medium text-left text-[1.75em] truncate leading-[1.75]">
-          Fill in the blanks
+          {question!.content}
         </MathJax>
       </div>
       <div
@@ -36,10 +64,10 @@ export default function Matching() {
           setExpanded={setExpanded}
         >
           <BaseAccordion.Head>
-            Correct answer{mod.value.answers.length > 1 ? "s" : ""}
+            Correct answer{answers.length > 1 ? "s" : ""}
           </BaseAccordion.Head>
           <BaseAccordion.Body className="relative w-full h-full">
-            {(mod.value.answers as MatchingAnswer[]).map((a, i) => (
+            {(answers as MatchingAnswer[]).map((a, i) => (
               <div
                 key={a.prompt}
                 className="absolute flex flex-col space-y-2 justify-center items-center transition-all duration-300 w-full h-full font-sans-serif"
@@ -47,12 +75,12 @@ export default function Matching() {
                   transform: `translate(${(i - cur) * 100}%, 0%)`,
                 }}
               >
-                <p className="font-sans-serif text-[1em] font-light truncate !w-3/4 sm:max-w-[30vw] text-center">
+                <p className="font-sans-serif text-[1em] truncate !w-3/4 sm:max-w-[30vw] text-center">
                   {i + 1}&#46;&nbsp;
                   {
-                    (
-                      mod.value.question!.options as MatchingOption
-                    ).prompts.find((o) => o.id === a.prompt)?.content
+                    (question!.options as MatchingOption).prompts.find(
+                      (o) => o.id === a.prompt
+                    )?.content
                   }
                 </p>
                 <ChoiceButton
@@ -60,18 +88,18 @@ export default function Matching() {
                   style={{
                     backgroundColor: mod.value.config.option.colorless
                       ? "#faf7ee"
-                      : (
-                          mod.value.question!.options as MatchingOption
-                        ).options.find((o) => o.id === a.option)?.color,
+                      : (question!.options as MatchingOption).options.find(
+                          (o) => o.id === a.option
+                        )?.color,
                   }}
                   areDetailsShown
                   disabled
                 >
                   <ChoiceButton.Content>
                     {
-                      (
-                        mod.value.question!.options as MatchingOption
-                      ).options.find((o) => o.id === a.option)?.content
+                      (question!.options as MatchingOption).options.find(
+                        (o) => o.id === a.option
+                      )?.content
                     }
                   </ChoiceButton.Content>
                 </ChoiceButton>
@@ -88,7 +116,7 @@ export default function Matching() {
                 <IoChevronBack className="w-5 h-5" />
               </button>
             )}
-            {cur < mod.value.answers.length - 1 && (
+            {cur < answers.length - 1 && (
               <button
                 onClick={() => setCur(cur + 1)}
                 className="absolute top-1/2 -translate-y-1/2 right-0"

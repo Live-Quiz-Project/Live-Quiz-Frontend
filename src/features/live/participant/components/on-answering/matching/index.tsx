@@ -36,15 +36,6 @@ export default function Matching({ timeLeft }: Props) {
       {}
     )
   );
-  const [draggedOver, setDraggedOver] = useState(
-    (mod.value.question!.options as MatchingOption).prompts.reduce(
-      (acc, p) => ({ ...acc, [p.id]: false }),
-      {}
-    )
-  );
-  const [options, setOptions] = useState<
-    (MatchingOptionOption & { eliminated: boolean })[]
-  >([]);
   const [isMediaShown, setMediaShown] = useState<boolean>(false);
   const handlers = useSwipeable({
     onSwipedUp: () => setMediaShown(true),
@@ -69,29 +60,6 @@ export default function Matching({ timeLeft }: Props) {
       }
     };
   }, []);
-
-  useEffect(() => {
-    let newDraggedOver: { [x: string]: boolean } = { ...draggedOver };
-    for (const prompt of (mod.value.question!.options as MatchingOption)
-      .prompts) {
-      newDraggedOver[prompt.id] = false;
-    }
-    setDraggedOver(newDraggedOver);
-
-    let newOptions: typeof options = [];
-    for (const option of (mod.value.question!.options as MatchingOption)
-      .options) {
-      if (
-        option.eliminate &&
-        Object.values(selectedOptions).includes(option.id)
-      ) {
-        newOptions.push({ ...option, eliminated: true });
-      } else {
-        newOptions.push({ ...option, eliminated: false });
-      }
-    }
-    setOptions(newOptions);
-  }, [selectedOptions]);
 
   function onSubmit(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
@@ -153,10 +121,7 @@ export default function Matching({ timeLeft }: Props) {
             <Unanswered
               selectedOptions={selectedOptions}
               setSelectedOptions={setSelectedOptions}
-              draggedOver={draggedOver}
-              setDraggedOver={setDraggedOver}
               notAllAnswered={notAllAnswered}
-              options={options}
             />
           )}
           {mod.value.answers && mod.value.answers.answers.length > 0 && (

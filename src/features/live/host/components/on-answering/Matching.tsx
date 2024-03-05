@@ -299,7 +299,7 @@ export default function Matching({ q, setCurSubQ }: Props) {
         {(question!.options as MatchingOption).prompts.map((option, i) => (
           <ChoiceButton
             key={i}
-            className={`text-[1.25em] xs:text-[1.5em] p-2 sm:p-4 2xl:p-[0.6em] border-dashed !border-[3px] bg-beige border-karry [&>label]:!cursor-default ${promptButtonGridFormat}`}
+            className={`text-[1.25em] xs:text-[1.5em] p-2 sm:p-4 2xl:p-[0.6em] border-dashed !border-2 bg-beige border-denim [&>label]:!cursor-default ${promptButtonGridFormat}`}
             areDetailsShown
           >
             <ChoiceButton.Icon>
@@ -312,10 +312,7 @@ export default function Matching({ q, setCurSubQ }: Props) {
             </ChoiceButton.Content>
           </ChoiceButton>
         ))}
-        {(
-          (question!.options as MatchingOption)
-            .options as MatchingOptionOption[]
-        ).map((option, i) => (
+        {(question!.options as MatchingOption).options.map((option, i) => (
           <ChoiceButton
             key={i}
             className={`text-[1.25em] xs:text-[1.5em] p-2 sm:p-4 2xl:p-[0.6em] [&>label]:!cursor-default ${optionButtonGridFormat}`}

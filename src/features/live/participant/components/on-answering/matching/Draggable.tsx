@@ -62,6 +62,7 @@ export default function Draggable(props: Props) {
     };
 
     document.addEventListener("mousemove", onDrag);
+    document.addEventListener("touchmove", onDrag, { passive: false });
     return () => {
       document.removeEventListener("mousemove", onDrag);
     };

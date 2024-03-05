@@ -1,16 +1,34 @@
 import { MathJax } from "better-react-mathjax";
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import BaseAccordion from "@/common/components/accordions/BaseAccordion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
-export default function FillBlank() {
+type Props = {
+  className?: string;
+  a?: TextOption[];
+};
+
+export default function FillBlank({ className = "", a }: Props) {
   const mod = useTypedSelector((state) => state.mod);
+  const [answers, setAnswers] = useState<TextOption[]>(
+    a ? a : mod.value.answers
+  );
   const [isExpanded, setExpanded] = useState<boolean>(true);
   const [cur, setCur] = useState<number>(0);
 
+  useEffect(() => {
+    if (a) {
+      setAnswers(a);
+    } else {
+      setAnswers(mod.value.answers);
+    }
+  }, [a]);
+
   return (
-    <div className="bg-quartz grid grid-rows-[auto_1fr] gap-[1em] justify-items-center items-center w-full h-full overflow-auto">
+    <div
+      className={`bg-quartz grid grid-rows-[auto_1fr] gap-[1em] justify-items-center items-center w-full h-full overflow-auto ${className}`}
+    >
       <div className="grid grid-cols-[auto_1fr] gap-[1em] xs:gap-[1.5em] items-center font-serif overflow-auto p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pb-0">
         <div className="flex items-center h-[3em] truncate w-[115%]">
           <p className="text-[2.25em] !-rotate-[25deg] text-denim">A</p>
@@ -35,10 +53,10 @@ export default function FillBlank() {
           setExpanded={setExpanded}
         >
           <BaseAccordion.Head>
-            Correct answer{mod.value.answers.length > 1 ? "s" : ""}
+            Correct answer{answers.length > 1 ? "s" : ""}
           </BaseAccordion.Head>
           <BaseAccordion.Body className="relative w-full h-full">
-            {(mod.value.answers as TextOption[]).map((a, i) => (
+            {answers.map((a, i) => (
               <div
                 key={a.id}
                 className="absolute flex flex-col space-y-2 justify-center items-center transition-all duration-300 w-full h-full font-sans-serif"
@@ -74,7 +92,7 @@ export default function FillBlank() {
                 <IoChevronBack className="w-5 h-5" />
               </button>
             )}
-            {cur < mod.value.answers.length - 1 && (
+            {cur < answers.length - 1 && (
               <button
                 onClick={() => setCur(cur + 1)}
                 className="absolute top-1/2 -translate-y-1/2 right-0"
