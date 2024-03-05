@@ -81,6 +81,7 @@ spec:
                   script{
                       sh 'npm install -g pnpm'
                       sh 'pnpm install'
+                      sh 'pnpm run build'
                   }
               }
           }
