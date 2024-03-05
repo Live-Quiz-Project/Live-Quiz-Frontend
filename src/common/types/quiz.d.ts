@@ -24,6 +24,7 @@ declare global {
     content: string;
     color: string;
     mark: number;
+    count: number;
     correct: boolean;
   };
 

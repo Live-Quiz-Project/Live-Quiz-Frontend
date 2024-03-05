@@ -48,7 +48,7 @@ export default function BaseAccordion({
   }
 
   return (
-    <div className={className}>
+    <div className={className} id="accordion">
       {Children.map(children, (child) => {
         if (checkNamespace(child, "head")) {
           return (

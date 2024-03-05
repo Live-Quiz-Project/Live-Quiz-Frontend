@@ -33,7 +33,7 @@ export default function Main() {
           >
             {isNoteExpanded && (
               <MathJax
-                className={`h-full tracking-tight font-medium text-left text-[1.75em] w-full ${
+                className={`h-full tracking-tight font-serif font-medium text-left text-[1.75em] w-full ${
                   isNoteExpanded
                     ? "pt-[0.1em] leading-normal"
                     : "truncate leading-[1.75]"
@@ -55,7 +55,7 @@ export default function Main() {
           </button>
         </div>
         <div className="w-full h-full grid items-center text-center overflow-auto">
-          <MathJax className="tracking-tight font-medium text-[1.75em] leading-normal">
+          <MathJax className="tracking-tight font-medium text-[1.75em] leading-normal font-serif">
             {mod.value.question!.content}
           </MathJax>
         </div>
@@ -64,7 +64,7 @@ export default function Main() {
         <p className="absolute bottom-full right-1/2 w-max text-[1.15em]">
           Continue here
         </p>
-        <HiOutlineArrowLongDown className="rotate-[-30deg] w-[8vw] h-[8vw] md:w-[4vw] md:h-[4vw]" />
+        <HiOutlineArrowLongDown className="rotate-[-25deg] w-[8vw] h-[8vw] md:w-[4vw] md:h-[4vw]" />
       </div>
     </div>
   );

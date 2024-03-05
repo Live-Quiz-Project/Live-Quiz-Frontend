@@ -2,26 +2,41 @@ import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import { useEffect, useRef, useState } from "react";
 import { select, scaleBand, scaleLinear, max } from "d3";
 
-export default function Answers() {
+type Props = {
+  a?: ChoiceOption[];
+};
+
+export default function Answers({ a }: Props) {
   const mod = useTypedSelector((state) => state.mod);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<SVGSVGElement>(null);
+  const [answers, setAnswers] = useState<ChoiceOption[]>(
+    a ? a : mod.value.answers
+  );
   const [total, setTotal] = useState<number>(0);
   const [data, setData] = useState<
     { label: string; value: number; color: string }[]
   >([]);
 
   useEffect(() => {
+    if (a) {
+      setAnswers(a);
+    } else {
+      setAnswers(mod.value.answers);
+    }
+  }, [a]);
+
+  useEffect(() => {
     if (data.length > 0) drawChart();
   }, [data]);
 
   useEffect(() => {
-    if (!mod.value.answers) return;
+    if (!answers) return;
     let totalCount = 0;
-    let answers = [];
-    for (const answer of mod.value.answers) {
+    let ans = [];
+    for (const answer of answers) {
       totalCount += answer.count;
-      answers.push({
+      ans.push({
         label: answer.content,
         value: answer.count,
         color: answer.color,
@@ -29,8 +44,8 @@ export default function Answers() {
     }
 
     setTotal(totalCount);
-    setData(answers);
-  }, [mod.value.answers]);
+    setData(ans);
+  }, [answers]);
 
   function drawChart() {
     const svgNode = chartRef.current;

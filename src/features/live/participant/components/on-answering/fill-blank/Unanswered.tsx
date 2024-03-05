@@ -1,9 +1,8 @@
 import FilledButton from "@/common/components/buttons/FilledButton";
-import EditableLabel from "@/common/components/inputs/EditableLabel";
+import BaseTextarea from "@/common/components/textareas/BaseTextarea";
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import { MathJax } from "better-react-mathjax";
 import {
-  ChangeEvent,
   Dispatch,
   FormEvent,
   SetStateAction,
@@ -34,10 +33,10 @@ export default function Unanswered({
   const [isNoteExpanded, setNoteExpanded] = useState<boolean>(false);
   const [isNoteFirstOpened, setNoteFirstOpened] = useState<boolean>(true);
 
-  function onChange(e: ChangeEvent<HTMLSpanElement>) {
+  function onChange(e: FormEvent<HTMLTextAreaElement>) {
     e.preventDefault();
     const id = e.currentTarget.id;
-    const content = e.currentTarget.innerText;
+    const content = e.currentTarget.value;
     setAnsweredOptions((prev) =>
       prev.map((option) =>
         option.id === id ? { ...option, content: content } : option
@@ -113,17 +112,17 @@ export default function Unanswered({
         )}
       </div>
       <div
-        className="w-full h-full grid items-center content-center gap-4 sm:gap-6 2xl:gap-[1vw] p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 overflow-auto"
+        className="w-full h-full grid items-center content-start gap-4 sm:gap-6 2xl:gap-[1vw] p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 overflow-hidden"
         style={{
           gridTemplateRows: `repeat(${
             (question!.options as TextOption[]).length
-          }, auto)`,
+          },minmax(0,1fr))`,
         }}
       >
         {(question!.options as TextOption[]).map((option, i) => (
           <div
             key={option.id}
-            className="w-full flex gap-4 sm:gap-6 2xl:gap-[1vw] text-[1.5em] items-center tracking-tight leading-[1.75]"
+            className="w-full h-full flex gap-4 sm:gap-6 2xl:gap-[1vw] text-[1.5em] items-center tracking-tight leading-[1.75] pt-1"
           >
             <span
               className={`inline-flex items-center justify-center min-w-[2em] min-h-[2em] rounded-full bg-beige border font-sans-serif ring-sienna ${
@@ -132,8 +131,8 @@ export default function Unanswered({
             >
               {String.fromCharCode(65 + i)}
             </span>
-            <EditableLabel
-              className="text-[1em] border bg-beige p-2 sm:p-4 2xl:p-[0.6em] w-full rounded-lg xs:rounded-xl 2xl:rounded-[1vw] break-all"
+            <BaseTextarea
+              className="text-[1em] h-full border !border-dune bg-beige 2xl:p-[0.6em] w-full rounded-lg xs:rounded-xl 2xl:rounded-[1vw] break-all"
               placeholder={`Enter answer for blank ${String.fromCharCode(
                 65 + i
               )}...`}
@@ -148,7 +147,7 @@ export default function Unanswered({
       </div>
       {q && onSubmit && (
         <FilledButton
-          className="absolute bottom-2 right-2 bg-dune text-beige text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
+          className="absolute bottom-0 right-0 rounded-none rounded-tl-3xl bg-dune text-beige text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
           onClick={onSubmit}
         >
           Submit

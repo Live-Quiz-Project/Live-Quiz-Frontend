@@ -1,23 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import { MathJax } from "better-react-mathjax";
 import { FaCheck, FaXmark } from "react-icons/fa6";
 import BaseAccordion from "@/common/components/accordions/BaseAccordion";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
 
-export default function TrueFalse() {
+type Props = {
+  className?: string;
+  q?: Question;
+  a?: ChoiceOption[];
+};
+
+export default function TrueFalse({ className, q, a }: Props) {
   const auth = useTypedSelector((state) => state.auth);
   const mod = useTypedSelector((state) => state.mod);
+  const [question, setQuestion] = useState<Question>(
+    q ? q : mod.value.question!
+  );
+  const [answers, setAnswers] = useState<ChoiceOption[]>(
+    a ? a : mod.value.answers.answers
+  );
   const [isExpanded, setExpanded] = useState<boolean>(true);
 
+  useEffect(() => {
+    if (q) {
+      setQuestion(q);
+    } else {
+      setQuestion(mod.value.question!);
+    }
+
+    if (a) {
+      setAnswers(a);
+    } else {
+      setAnswers(mod.value.answers.answers);
+    }
+  }, [q, a]);
+
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] gap-[1em] justify-items-center items-center h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw]">
+    <div
+      className={`grid gap-[1em] justify-items-center items-center h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] ${className} ${
+        q ? "grid-rows-[auto_1fr]" : "grid-rows-[auto_1fr_auto]"
+      }`}
+    >
       <div className="grid grid-cols-[auto_1fr] gap-[1em] items-center font-serif">
         <div className="flex items-center h-[3em] truncate w-[115%]">
           <p className="text-[2.25em] !-rotate-[25deg] text-sienna">A</p>
         </div>
         <MathJax className="tracking-tight font-medium text-left text-[1.75em] truncate leading-[1.75]">
-          {mod.value.question!.content}
+          {question!.content}
         </MathJax>
       </div>
       <div
@@ -39,62 +69,65 @@ export default function TrueFalse() {
             <BaseAccordion.Head>Your answer</BaseAccordion.Head>
             <BaseAccordion.Body className="relative w-full h-full">
               <div
-                key={mod.value.answers.answers[0].id}
-                className="absolute flex justify-center items-center transition-all duration-300 w-full h-full"
+                key={answers[0].id}
+                className="absolute flex flex-col space-y-2 justify-center items-center transition-all duration-300 w-full h-full"
               >
                 <ChoiceButton
                   className={`relative !w-3/4 sm:max-w-[30vw] !h-fit aspect-[4/3] text-[1.25em] leading-snug ring-4 z-1 ${
-                    mod.value.answers.answers[0].correct
-                      ? "ring-apple/50"
-                      : "ring-scarlet/50"
+                    answers[0].correct ? "ring-apple/50" : "ring-scarlet/50"
                   }`}
                   style={{
                     backgroundColor: mod.value.config.option.colorless
                       ? "#faf7ee"
-                      : mod.value.answers.answers[0].color,
+                      : answers[0].color,
                   }}
                   areDetailsShown
                   disabled
                 >
                   <ChoiceButton.Content>
-                    {mod.value.answers.answers[0].content === "True" ? (
+                    {answers[0].content === "True" ? (
                       <FaCheck className="size-[1em]" />
-                    ) : mod.value.answers.answers[0].content === "False" ? (
+                    ) : answers[0].content === "False" ? (
                       <FaXmark className="size-[1em]" />
                     ) : (
-                      mod.value.answers.answers[0].content
+                      answers[0].content
                     )}
-                    {mod.value.answers.answers[0].correct ? (
+                    {answers[0].correct ? (
                       <FaCheck className="absolute top-1 left-1 min-w-[1em] min-h-[1em] text-apple" />
                     ) : (
                       <FaXmark className="absolute top-1 left-1 min-w-[1em] min-h-[1em] text-scarlet" />
                     )}
                   </ChoiceButton.Content>
                 </ChoiceButton>
+                <p className="font-sans-serif text-[0.75em] font-medium leading-snug">
+                  {answers[0].mark} Mark{answers[0].mark > 1 ? "s" : ""}
+                </p>
               </div>
             </BaseAccordion.Body>
           </BaseAccordion>
         ) : (
-          <em className="m-auto font-sans-serif text-[1.25em]">
+          <em className="m-auto font-sans-serif text-[1.25em] text-regent-gray">
             You didn't answer :(
           </em>
         )}
       </div>
-      <div className="flex flex-col justify-center items-center font-sans-serif text-[1.25em] gap-[0.1em]">
-        <p className="text-[0.85em]">
-          {mod.value.answers && mod.value.answers.marks
-            ? mod.value.answers.marks
-            : 0}
-          &nbsp;Mark
-          {mod.value.answers && mod.value.answers.marks > 1 ? "s" : ""}
-        </p>
-        <p>
-          Total&#58;&nbsp;
-          {auth.value.participant.marks ? auth.value.participant.marks : 0}
-          &nbsp;Mark
-          {auth.value.participant.marks > 1 ? "s" : ""}
-        </p>
-      </div>
+      {!q && (
+        <div className="flex flex-col justify-center items-center font-sans-serif text-[1.25em] gap-[0.1em]">
+          <p className="text-[0.85em]">
+            {mod.value.answers && mod.value.answers.marks
+              ? mod.value.answers.marks
+              : 0}
+            &nbsp;Mark
+            {mod.value.answers && mod.value.answers.marks > 1 ? "s" : ""}
+          </p>
+          <p>
+            Total&#58;&nbsp;
+            {auth.value.participant.marks ? auth.value.participant.marks : 0}
+            &nbsp;Mark
+            {auth.value.participant.marks > 1 ? "s" : ""}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

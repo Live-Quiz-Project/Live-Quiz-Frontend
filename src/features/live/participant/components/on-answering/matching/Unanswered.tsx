@@ -1,223 +1,270 @@
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import { MathJax } from "better-react-mathjax";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AiFillMessage, AiOutlineMessage } from "react-icons/ai";
 import DetailedOptionsSwitch from "../DetailedOptionsSwitch";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
 import Draggable from "./Draggable";
+import FilledButton from "@/common/components/buttons/FilledButton";
 
 type Props = {
   selectedOptions: { [x: string]: string };
   setSelectedOptions: Dispatch<SetStateAction<{ [x: string]: string }>>;
-  options: (MatchingOptionOption & { eliminated: boolean })[];
-  draggedOver: { [x: string]: boolean };
   notAllAnswered: boolean;
-  setDraggedOver: Dispatch<SetStateAction<{ [x: string]: boolean }>>;
+  onSubmit?: (e: FormEvent<HTMLButtonElement>) => void;
+  required?: boolean;
+  q?: Question;
 };
 
 export default function Unanswered({
   selectedOptions,
   setSelectedOptions,
-  options,
-  draggedOver,
   notAllAnswered,
-  setDraggedOver,
+  onSubmit,
+  required,
+  q,
 }: Props) {
   const mod = useTypedSelector((state) => state.mod);
+  const [question, setQuestion] = useState<Question>(
+    q ? q : mod.value.question!
+  );
   const promptRefs = Array.from(
-    { length: (mod.value.question!.options as MatchingOption).prompts.length },
+    {
+      length: (question.options as MatchingOption).prompts.length,
+    },
     () => useRef<HTMLDivElement>(null)
   );
   const optionRefs = Array.from(
-    { length: (mod.value.question!.options as MatchingOption).options.length },
+    {
+      length: (question.options as MatchingOption).options.length,
+    },
     () => useRef<HTMLDivElement>(null)
   );
+  const [draggedOver, setDraggedOver] = useState(
+    (question.options as MatchingOption).prompts.reduce(
+      (acc, p) => ({ ...acc, [p.id]: false }),
+      {}
+    )
+  );
+  const [options, setOptions] = useState<
+    (MatchingOptionOption & { eliminated: boolean })[]
+  >([]);
   const [isQuestionExpanded, setQuestionExpanded] = useState<boolean>(false);
   const [isNoteExpanded, setNoteExpanded] = useState<boolean>(false);
   const [isNoteFirstOpened, setNoteFirstOpened] = useState<boolean>(true);
   const [areDetailsShown, setDetailsShown] = useState<boolean>(false);
   const optionsContainerGridFormat =
-    mod.value.question!.layout === 0 || mod.value.question!.layout === 1
-      ? (mod.value.question!.options as MatchingOption).prompts.length >
-        (mod.value.question!.options as MatchingOption).options.length
+    question!.layout === 0 || question!.layout === 1
+      ? (question!.options as MatchingOption).prompts.length >
+        (question!.options as MatchingOption).options.length
         ? `grid-rows-${
-            (mod.value.question!.options as MatchingOption).prompts.length * 2
+            (question!.options as MatchingOption).prompts.length * 2
           } grid-flow-col`
         : `grid-rows-${
-            (mod.value.question!.options as MatchingOption).options.length * 2
+            (question!.options as MatchingOption).options.length * 2
           } grid-flow-col`
-      : (mod.value.question!.options as MatchingOption).prompts.length >
-        (mod.value.question!.options as MatchingOption).options.length
+      : (question!.options as MatchingOption).prompts.length >
+        (question!.options as MatchingOption).options.length
       ? `grid-cols-${
-          (mod.value.question!.options as MatchingOption).prompts.length * 2
+          (question!.options as MatchingOption).prompts.length * 2
         } grid-flow-row`
       : `grid-cols-${
-          (mod.value.question!.options as MatchingOption).options.length * 2
+          (question!.options as MatchingOption).options.length * 2
         } grid-flow-row`;
   const promptButtonGridFormat = `${
-    mod.value.question!.layout === 0
+    question!.layout === 0
       ? "row-span-2 col-start-1"
-      : mod.value.question!.layout === 1
+      : question!.layout === 1
       ? "row-span-2 col-start-2"
-      : mod.value.question!.layout === 2
+      : question!.layout === 2
       ? "col-span-2 row-start-1"
       : "col-span-2 row-start-2"
   } ${
-    mod.value.question!.layout === 0 || mod.value.question!.layout === 1
-      ? (mod.value.question!.options as MatchingOption).prompts.length <
-        (mod.value.question!.options as MatchingOption).options.length
-        ? (mod.value.question!.options as MatchingOption).options.length === 2
+    question!.layout === 0 || question!.layout === 1
+      ? (question!.options as MatchingOption).prompts.length <
+        (question!.options as MatchingOption).options.length
+        ? (question!.options as MatchingOption).options.length === 2
           ? "first:row-start-2"
-          : (mod.value.question!.options as MatchingOption).options.length === 3
-          ? (mod.value.question!.options as MatchingOption).prompts.length === 1
+          : (question!.options as MatchingOption).options.length === 3
+          ? (question!.options as MatchingOption).prompts.length === 1
             ? "first:row-start-3"
             : "first:row-start-2"
-          : (mod.value.question!.options as MatchingOption).options.length === 4
-          ? (mod.value.question!.options as MatchingOption).prompts.length === 1
+          : (question!.options as MatchingOption).options.length === 4
+          ? (question!.options as MatchingOption).prompts.length === 1
             ? "first:row-start-4"
-            : (mod.value.question!.options as MatchingOption).prompts.length ===
-              2
+            : (question!.options as MatchingOption).prompts.length === 2
             ? "first:row-start-3 [&:nth-child(2)]:row-start-5"
             : "first:row-start-2 [&:nth-child(2)]:row-start-4 [&:nth-child(3)]:row-start-6"
-          : (mod.value.question!.options as MatchingOption).options.length === 5
-          ? (mod.value.question!.options as MatchingOption).prompts.length === 1
+          : (question!.options as MatchingOption).options.length === 5
+          ? (question!.options as MatchingOption).prompts.length === 1
             ? "first:row-start-5"
-            : (mod.value.question!.options as MatchingOption).prompts.length ===
-              2
+            : (question!.options as MatchingOption).prompts.length === 2
             ? "first:row-start-4 [&:nth-child(2)]:row-start-6"
-            : (mod.value.question!.options as MatchingOption).prompts.length ===
-              3
+            : (question!.options as MatchingOption).prompts.length === 3
             ? "first:row-start-3 [&:nth-child(2)]:row-start-5 [&:nth-child(3)]:row-start-7"
             : "first:row-start-2 [&:nth-child(2)]:row-start-4 [&:nth-child(3)]:row-start-6 [&:nth-child(4)]:row-start-8"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 1
+          : (question!.options as MatchingOption).prompts.length === 1
           ? "first:row-start-6"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 2
+          : (question!.options as MatchingOption).prompts.length === 2
           ? "first:row-start-5 [&:nth-child(2)]:row-start-7"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 3
+          : (question!.options as MatchingOption).prompts.length === 3
           ? "first:row-start-4 [&:nth-child(2)]:row-start-6 [&:nth-child(3)]:row-start-8"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 4
+          : (question!.options as MatchingOption).prompts.length === 4
           ? "first:row-start-3 [&:nth-child(2)]:row-start-5 [&:nth-child(3)]:row-start-7 [&:nth-child(4)]:row-start-9"
           : "first:row-start-2 [&:nth-child(2)]:row-start-4 [&:nth-child(3)]:row-start-6 [&:nth-child(4)]:row-start-8 [&:nth-child(5)]:row-start-10"
         : ""
-      : (mod.value.question!.options as MatchingOption).options.length >
-        (mod.value.question!.options as MatchingOption).prompts.length
-      ? (mod.value.question!.options as MatchingOption).options.length === 2
+      : (question!.options as MatchingOption).options.length >
+        (question!.options as MatchingOption).prompts.length
+      ? (question!.options as MatchingOption).options.length === 2
         ? "first:col-start-2"
-        : (mod.value.question!.options as MatchingOption).options.length === 3
-        ? (mod.value.question!.options as MatchingOption).prompts.length === 1
+        : (question!.options as MatchingOption).options.length === 3
+        ? (question!.options as MatchingOption).prompts.length === 1
           ? "first:col-start-3"
           : "first:col-start-2"
-        : (mod.value.question!.options as MatchingOption).options.length === 4
-        ? (mod.value.question!.options as MatchingOption).prompts.length === 1
+        : (question!.options as MatchingOption).options.length === 4
+        ? (question!.options as MatchingOption).prompts.length === 1
           ? "first:col-start-4"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 2
+          : (question!.options as MatchingOption).prompts.length === 2
           ? "first:col-start-3 [&:nth-child(2)]:col-start-5"
           : "first:col-start-2 [&:nth-child(2)]:col-start-4 [&:nth-child(3))]:col-start-6"
-        : (mod.value.question!.options as MatchingOption).options.length === 5
-        ? (mod.value.question!.options as MatchingOption).prompts.length === 1
+        : (question!.options as MatchingOption).options.length === 5
+        ? (question!.options as MatchingOption).prompts.length === 1
           ? "first:col-start-5"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 2
+          : (question!.options as MatchingOption).prompts.length === 2
           ? "first:col-start-4 [&:nth-child(2)]:col-start-6"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 3
+          : (question!.options as MatchingOption).prompts.length === 3
           ? "first:col-start-3 [&:nth-child(2)]:col-start-5 [&:nth-child(3)]:col-start-7"
           : "first:col-start-2 [&:nth-child(2)]:col-start-4 [&:nth-child(3)]:col-start-6 [&:nth-child(4)]:col-start-8"
-        : (mod.value.question!.options as MatchingOption).prompts.length === 1
+        : (question!.options as MatchingOption).prompts.length === 1
         ? "first:col-start-6"
-        : (mod.value.question!.options as MatchingOption).prompts.length === 2
+        : (question!.options as MatchingOption).prompts.length === 2
         ? "first:col-start-5 [&:nth-child(2)]:col-start-7"
-        : (mod.value.question!.options as MatchingOption).prompts.length === 3
+        : (question!.options as MatchingOption).prompts.length === 3
         ? "first:col-start-4 [&:nth-child(2)]:col-start-6 [&:nth-child(3)]:col-start-8"
-        : (mod.value.question!.options as MatchingOption).prompts.length === 4
+        : (question!.options as MatchingOption).prompts.length === 4
         ? "first:col-start-3 [&:nth-child(2)]:col-start-5 [&:nth-child(3)]:col-start-7 [&:nth-child(4)]:col-start-9"
         : "first:col-start-2 [&:nth-child(2)]:col-start-4 [&:nth-child(3)]:col-start-6 [&:nth-child(4)]:col-start-8 [&:nth-child(5)]:col-start-10"
       : ""
   }`;
   const optionButtonGridFormat = `${
-    mod.value.question!.layout === 0
+    question!.layout === 0
       ? "row-span-2 col-start-2"
-      : mod.value.question!.layout === 1
+      : question!.layout === 1
       ? "row-span-2 col-start-1"
-      : mod.value.question!.layout === 2
+      : question!.layout === 2
       ? "col-span-2 row-start-2"
       : "col-span-2 row-start-1"
   } ${
-    mod.value.question!.layout === 0 || mod.value.question!.layout === 1
-      ? (mod.value.question!.options as MatchingOption).prompts.length >
-        (mod.value.question!.options as MatchingOption).options.length
-        ? (mod.value.question!.options as MatchingOption).prompts.length === 2
+    question!.layout === 0 || question!.layout === 1
+      ? (question!.options as MatchingOption).prompts.length >
+        (question!.options as MatchingOption).options.length
+        ? (question!.options as MatchingOption).prompts.length === 2
           ? "[&:nth-child(3)]:row-start-2"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 3
-          ? (mod.value.question!.options as MatchingOption).options.length === 1
+          : (question!.options as MatchingOption).prompts.length === 3
+          ? (question!.options as MatchingOption).options.length === 1
             ? "[&:nth-child(4)]:row-start-3"
             : "[&:nth-child(4)]:row-start-2"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 4
-          ? (mod.value.question!.options as MatchingOption).options.length === 1
+          : (question!.options as MatchingOption).prompts.length === 4
+          ? (question!.options as MatchingOption).options.length === 1
             ? "[&:nth-child(5)]:row-start-4"
-            : (mod.value.question!.options as MatchingOption).options.length ===
-              2
+            : (question!.options as MatchingOption).options.length === 2
             ? "[&:nth-child(5)]:row-start-3 [&:nth-child(6)]:row-start-5"
             : "[&:nth-child(5)]:row-start-2 [&:nth-child(6)]:row-start-4 [&:nth-child(7)]:row-start-6"
-          : (mod.value.question!.options as MatchingOption).prompts.length === 5
-          ? (mod.value.question!.options as MatchingOption).options.length === 1
+          : (question!.options as MatchingOption).prompts.length === 5
+          ? (question!.options as MatchingOption).options.length === 1
             ? "[&:nth-child(6)]:row-start-5"
-            : (mod.value.question!.options as MatchingOption).options.length ===
-              2
+            : (question!.options as MatchingOption).options.length === 2
             ? "[&:nth-child(6)]:row-start-4 [&:nth-child(7)]:row-start-6"
-            : (mod.value.question!.options as MatchingOption).options.length ===
-              3
+            : (question!.options as MatchingOption).options.length === 3
             ? "[&:nth-child(6)]:row-start-3 [&:nth-child(7)]:row-start-5 [&:nth-child(8)]:row-start-7"
             : "[&:nth-child(6)]:row-start-2 [&:nth-child(7)]:row-start-4 [&:nth-child(8)]:row-start-6 [&:nth-child(9)]:row-start-8"
-          : (mod.value.question!.options as MatchingOption).options.length === 1
+          : (question!.options as MatchingOption).options.length === 1
           ? "[&:nth-child(7)]:row-start-6"
-          : (mod.value.question!.options as MatchingOption).options.length === 2
+          : (question!.options as MatchingOption).options.length === 2
           ? "[&:nth-child(7)]:row-start-5 [&:nth-child(8)]:row-start-7"
-          : (mod.value.question!.options as MatchingOption).options.length === 3
+          : (question!.options as MatchingOption).options.length === 3
           ? "[&:nth-child(7)]:row-start-4 [&:nth-child(8)]:row-start-6 [&:nth-child(9)]:row-start-8"
-          : (mod.value.question!.options as MatchingOption).options.length === 4
+          : (question!.options as MatchingOption).options.length === 4
           ? "[&:nth-child(7)]:row-start-3 [&:nth-child(8)]:row-start-5 [&:nth-child(9)]:row-start-7 [&:nth-child(10)]:row-start-9"
           : "[&:nth-child(7)]:row-start-2 [&:nth-child(8)]:row-start-4 [&:nth-child(9)]:row-start-6 [&:nth-child(10)]:row-start-8 [&:nth-child(11)]:row-start-10"
         : ""
-      : (mod.value.question!.options as MatchingOption).prompts.length >
-        (mod.value.question!.options as MatchingOption).options.length
-      ? (mod.value.question!.options as MatchingOption).prompts.length === 2
+      : (question!.options as MatchingOption).prompts.length >
+        (question!.options as MatchingOption).options.length
+      ? (question!.options as MatchingOption).prompts.length === 2
         ? "[&:nth-child(3)]:col-start-2"
-        : (mod.value.question!.options as MatchingOption).prompts.length === 3
-        ? (mod.value.question!.options as MatchingOption).options.length === 1
+        : (question!.options as MatchingOption).prompts.length === 3
+        ? (question!.options as MatchingOption).options.length === 1
           ? "[&:nth-child(4)]:col-start-3"
           : "[&:nth-child(4)]:col-start-2"
-        : (mod.value.question!.options as MatchingOption).prompts.length === 4
-        ? (mod.value.question!.options as MatchingOption).options.length === 1
+        : (question!.options as MatchingOption).prompts.length === 4
+        ? (question!.options as MatchingOption).options.length === 1
           ? "[&:nth-child(5)]:col-start-4"
-          : (mod.value.question!.options as MatchingOption).options.length === 2
+          : (question!.options as MatchingOption).options.length === 2
           ? "[&:nth-child(5)]:col-start-3 [&:nth-child(6)]:col-start-5"
           : "[&:nth-child(5)]:col-start-2 [&:nth-child(6)]:col-start-4 [&:nth-child(7)]:col-start-6"
-        : (mod.value.question!.options as MatchingOption).prompts.length === 5
-        ? (mod.value.question!.options as MatchingOption).options.length === 1
+        : (question!.options as MatchingOption).prompts.length === 5
+        ? (question!.options as MatchingOption).options.length === 1
           ? "[&:nth-child(6)]:col-start-5"
-          : (mod.value.question!.options as MatchingOption).options.length === 2
+          : (question!.options as MatchingOption).options.length === 2
           ? "[&:nth-child(6)]:col-start-4 [&:nth-child(7)]:col-start-6"
-          : (mod.value.question!.options as MatchingOption).options.length === 3
+          : (question!.options as MatchingOption).options.length === 3
           ? "[&:nth-child(6)]:col-start-3 [&:nth-child(7)]:col-start-5 [&:nth-child(8)]:col-start-7"
           : "[&:nth-child(6)]:col-start-2 [&:nth-child(7)]:col-start-4 [&:nth-child(8)]:col-start-6 [&:nth-child(9)]:col-start-8"
-        : (mod.value.question!.options as MatchingOption).options.length === 1
+        : (question!.options as MatchingOption).options.length === 1
         ? "[&:nth-child(7)]:col-start-6"
-        : (mod.value.question!.options as MatchingOption).options.length === 2
+        : (question!.options as MatchingOption).options.length === 2
         ? "[&:nth-child(7)]:col-start-5 [&:nth-child(8)]:col-start-7"
-        : (mod.value.question!.options as MatchingOption).options.length === 3
+        : (question!.options as MatchingOption).options.length === 3
         ? "[&:nth-child(7)]:col-start-4 [&:nth-child(8)]:col-start-6 [&:nth-child(9)]:col-start-8"
-        : (mod.value.question!.options as MatchingOption).options.length === 4
+        : (question!.options as MatchingOption).options.length === 4
         ? "[&:nth-child(7)]:col-start-3 [&:nth-child(8)]:col-start-5 [&:nth-child(9)]:col-start-7 [&:nth-child(10)]:col-start-9"
         : "[&:nth-child(7)]:col-start-2 [&:nth-child(8)]:col-start-4 [&:nth-child(9)]:col-start-6 [&:nth-child(10)]:col-start-8 [&:nth-child(11)]:col-start-10"
       : ""
   }`;
 
+  useEffect(() => {
+    if (q) {
+      setQuestion(q);
+    } else {
+      setQuestion(mod.value.question!);
+    }
+  }, [q]);
+
+  useEffect(() => {
+    let newDraggedOver: { [x: string]: boolean } = { ...draggedOver };
+    for (const prompt of (question!.options as MatchingOption).prompts) {
+      newDraggedOver[prompt.id] = false;
+    }
+    setDraggedOver(newDraggedOver);
+
+    let newOptions: typeof options = [];
+    for (const option of (question!.options as MatchingOption).options) {
+      if (
+        option.eliminate &&
+        Object.values(selectedOptions).includes(option.id)
+      ) {
+        newOptions.push({ ...option, eliminated: true });
+      } else {
+        newOptions.push({ ...option, eliminated: false });
+      }
+    }
+    setOptions(newOptions);
+  }, [selectedOptions]);
+
   return (
     <div
-      className={`flex-1 grid gap-2 sm:gap-4 2xl:gap-[1vw] overflow-auto ${
+      className={`relative flex-1 grid gap-2 sm:gap-4 2xl:gap-[1vw] overflow-auto ${
         isQuestionExpanded || isNoteExpanded
           ? "grid-rows-2"
           : "grid-rows-[auto_1fr]"
-      }`}
+      } ${q ? "bg-koromiko/25" : ""}`}
     >
       <div
         className={`relative grid items-start gap-x-[1em] h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pb-0 grid-rows-[1fr_auto] ${
@@ -249,7 +296,7 @@ export default function Unanswered({
                   : "truncate leading-[1.75]"
               }`}
             >
-              {mod.value.question!.content}
+              {question!.content}
             </MathJax>
           </button>
         )}
@@ -282,7 +329,7 @@ export default function Unanswered({
                     : "truncate leading-[1.75]"
                 }`}
               >
-                {mod.value.question!.note}
+                {question!.note}
               </MathJax>
             )}
             <div className="relative w-[2em] h-[3em] text-sienna flex items-center">
@@ -291,79 +338,59 @@ export default function Unanswered({
               ) : (
                 <AiOutlineMessage className="group-hover:scale-110 w-full h-[2em] transition-all duration-200" />
               )}
-              {mod.value.question!.note !== "" && isNoteFirstOpened && (
+              {question!.note !== "" && isNoteFirstOpened && (
                 <span className="absolute block !p-0 top-1 -right-1 w-4 h-4 rounded-full bg-scarlet" />
               )}
             </div>
           </button>
         )}
-        {notAllAnswered && (
+        {required ? (
           <p className="col-span-3 text-scarlet animate-bounce">
-            &#42;&nbsp;Please match options to all prompts
+            &#42;&nbsp;This question is required to get to the next one.
           </p>
+        ) : (
+          notAllAnswered && (
+            <p className="col-span-3 text-scarlet animate-bounce">
+              &#42;&nbsp;Please match options to all prompts
+            </p>
+          )
         )}
       </div>
       <div
         className={`grid auto-cols-fr auto-rows-fr justify-items-center gap-2 sm:gap-4 2xl:gap-[1vw] p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 ${optionsContainerGridFormat}`}
       >
-        {(mod.value.question!.options as MatchingOption).prompts.map(
-          (prompt, i) => (
-            <div
-              key={prompt.id}
-              id={prompt.id}
-              ref={promptRefs[i]}
-              className={`relative w-full h-full rounded-lg lg:rounded-xl 2xl:rounded-[1vw] border-dashed !border-[3px] border-karry ${promptButtonGridFormat}  ${
-                draggedOver[prompt.id as keyof typeof draggedOver]
-                  ? "bg-dune/20"
-                  : "bg-beige"
-              } ${selectedOptions[prompt.id] ? "p-[5%]" : ""}`}
-            >
-              {selectedOptions[prompt.id] ? (
-                <Draggable
-                  id={
-                    options.find((o) => o.id === selectedOptions[prompt.id])?.id
-                  }
-                  optionRefs={optionRefs}
-                  promptRefs={promptRefs}
-                  draggedOver={draggedOver}
-                  setDraggedOver={setDraggedOver}
-                  selectedOptions={selectedOptions}
-                  setSelectedOptions={setSelectedOptions}
-                  isEliminated={false}
-                  match={prompt.id}
-                >
-                  <ChoiceButton
-                    id={prompt.id}
-                    className="[&>label]:!cursor-[inherit]"
-                    style={{
-                      backgroundColor: options.find(
-                        (o) => o.id === selectedOptions[prompt.id]
-                      )?.color,
-                    }}
-                    areDetailsShown={areDetailsShown}
-                  >
-                    <ChoiceButton.Icon>
-                      <p className="text-[1em] font-light">{i + 1}&#46;</p>
-                    </ChoiceButton.Icon>
-                    <ChoiceButton.Content>
-                      <MathJax className="!flex w-full items-center">
-                        <MathJax className="text-[1em] tracking-tight font-medium">
-                          {
-                            options.find(
-                              (o) => o.id === selectedOptions[prompt.id]
-                            )?.content
-                          }
-                        </MathJax>
-                      </MathJax>
-                    </ChoiceButton.Content>
-                  </ChoiceButton>
-                </Draggable>
-              ) : (
+        {(question!.options as MatchingOption).prompts.map((prompt, i) => (
+          <div
+            key={prompt.id}
+            id={prompt.id}
+            ref={promptRefs[i]}
+            className={`relative w-full h-full rounded-lg lg:rounded-xl 2xl:rounded-[1vw] border-dashed !border-[3px] border-karry ${promptButtonGridFormat}  ${
+              draggedOver[prompt.id as keyof typeof draggedOver]
+                ? "bg-dune/20"
+                : "bg-beige"
+            } ${selectedOptions[prompt.id] ? "p-[5%]" : ""}`}
+          >
+            {selectedOptions[prompt.id] ? (
+              <Draggable
+                id={
+                  options.find((o) => o.id === selectedOptions[prompt.id])?.id
+                }
+                optionRefs={optionRefs}
+                promptRefs={promptRefs}
+                draggedOver={draggedOver}
+                setDraggedOver={setDraggedOver}
+                selectedOptions={selectedOptions}
+                setSelectedOptions={setSelectedOptions}
+                isEliminated={false}
+                match={prompt.id}
+              >
                 <ChoiceButton
                   id={prompt.id}
-                  className="!border-none"
+                  className="[&>label]:!cursor-[inherit]"
                   style={{
-                    backgroundColor: prompt.color,
+                    backgroundColor: options.find(
+                      (o) => o.id === selectedOptions[prompt.id]
+                    )?.color,
                   }}
                   areDetailsShown={areDetailsShown}
                 >
@@ -373,15 +400,39 @@ export default function Unanswered({
                   <ChoiceButton.Content>
                     <MathJax className="!flex w-full items-center">
                       <MathJax className="text-[1em] tracking-tight font-medium">
-                        {prompt.content}
+                        {
+                          options.find(
+                            (o) => o.id === selectedOptions[prompt.id]
+                          )?.content
+                        }
                       </MathJax>
                     </MathJax>
                   </ChoiceButton.Content>
                 </ChoiceButton>
-              )}
-            </div>
-          )
-        )}
+              </Draggable>
+            ) : (
+              <ChoiceButton
+                id={prompt.id}
+                className="!border-none"
+                style={{
+                  backgroundColor: prompt.color,
+                }}
+                areDetailsShown={areDetailsShown}
+              >
+                <ChoiceButton.Icon>
+                  <p className="text-[1em] font-light">{i + 1}&#46;</p>
+                </ChoiceButton.Icon>
+                <ChoiceButton.Content>
+                  <MathJax className="!flex w-full items-center">
+                    <MathJax className="text-[1em] tracking-tight font-medium">
+                      {prompt.content}
+                    </MathJax>
+                  </MathJax>
+                </ChoiceButton.Content>
+              </ChoiceButton>
+            )}
+          </div>
+        ))}
         {options.map((option, i) => (
           <div
             key={option.id}
@@ -421,6 +472,14 @@ export default function Unanswered({
           </div>
         ))}
       </div>
+      {q && onSubmit && (
+        <FilledButton
+          className="absolute bottom-0 right-0 rounded-none rounded-tl-3xl bg-dune text-beige text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
+          onClick={onSubmit}
+        >
+          Submit
+        </FilledButton>
+      )}
     </div>
   );
 }

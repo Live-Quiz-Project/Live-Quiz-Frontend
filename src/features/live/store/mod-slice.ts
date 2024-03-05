@@ -116,7 +116,26 @@ export const mod = createSlice({
           selectMin: payloadQuestion.select_min,
           selectMax: payloadQuestion.select_max,
           options: payloadQuestion.options,
-          subquestions: payloadQuestion.subquestions,
+          subquestions:
+            payloadQuestion.subquestions &&
+            payloadQuestion.subquestions.map((subQ: any) => ({
+              id: subQ.id,
+              content: subQ.content,
+              note: subQ.note,
+              fontSize: subQ.font_size,
+              layout: subQ.layout_idx,
+              type: subQ.type,
+              haveTimeFactor: subQ.have_time_factor,
+              timeFactor: subQ.time_factor,
+              timeLimit: subQ.time_limit,
+              pool: subQ.pool,
+              pool_required: subQ.pool_required,
+              mediaType: subQ.media_type,
+              media: subQ.media,
+              selectMin: subQ.select_min,
+              selectMax: subQ.select_max,
+              options: subQ.options,
+            })),
         };
         state.value.question = newQuestion;
       }

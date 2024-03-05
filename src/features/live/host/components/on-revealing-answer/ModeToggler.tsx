@@ -16,12 +16,13 @@ export default function ModeToggler({ className = "", mode, setMode }: Props) {
 
   return (
     <div
-      className={`${className} relative flex justify-between w-20 xs:w-24 h-8 xs:h-10 p-1  rounded-full bg-jordy-blue border`}
+      className={`relative flex justify-between w-20 xs:w-24 h-8 xs:h-10 p-1  rounded-full bg-current border border-dune ${className}`}
+      id="reveal-mode-toggler"
     >
       <span
         className={`${
           mode ? "left-[calc(50%-1px)]" : "left-0"
-        } absolute top-0 w-10 xs:w-12 h-full border-4 border-jordy-blue bg-denim rounded-full transition-all duration-300`}
+        } absolute top-0 w-10 xs:w-12 h-full border-4 border-current bg-denim rounded-full transition-all duration-300`}
       />
       <button
         onClick={onToggle}

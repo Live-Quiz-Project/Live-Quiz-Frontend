@@ -10,6 +10,7 @@ import TrueFalse from "@/features/live/host/components/on-revealing-answer/true-
 import FillBlank from "@/features/live/host/components/on-revealing-answer/FillBlank";
 import Paragraph from "@/features/live/host/components/on-revealing-answer/Paragraph";
 import Matching from "@/features/live/host/components/on-revealing-answer/Matching";
+import Pool from "@/features/live/host/components/on-revealing-answer/Pool";
 import FilledButton from "@/common/components/buttons/FilledButton";
 import OutlinedButton from "@/common/components/buttons/OutlinedButton";
 import Leaderboard from "@/features/live/host/components/on-revealing-answer/Leaderboard";
@@ -41,6 +42,7 @@ export default function OnRevealingAnswer() {
             {mod.value.question!.type === QuestionTypesEnum.MATCHING && (
               <Matching />
             )}
+            {mod.value.question!.type === QuestionTypesEnum.POOL && <Pool />}
           </>
         )}
         {mode === 1 && <Leaderboard />}

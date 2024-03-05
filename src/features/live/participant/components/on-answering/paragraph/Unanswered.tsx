@@ -161,7 +161,7 @@ export default function Unanswered({
       </div>
       {q && onSubmit && (
         <FilledButton
-          className="absolute bottom-2 right-2 bg-dune text-beige text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
+          className="absolute bottom-0 right-0 rounded-none rounded-tl-3xl bg-dune text-beige text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
           onClick={onSubmit}
         >
           Submit

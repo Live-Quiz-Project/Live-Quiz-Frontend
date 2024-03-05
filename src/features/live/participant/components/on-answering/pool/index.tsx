@@ -15,9 +15,11 @@ import FilledButton from "@/common/components/buttons/FilledButton";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import Main from "@/features/live/participant/components/on-answering/pool/Main";
 import QuestionTypesEnum from "@/common/utils/question-types";
+import Choice from "@/features/live/participant/components/on-answering/pool/Choice";
 import TrueFalse from "@/features/live/participant/components/on-answering/pool/TrueFalse";
 import FillBlank from "@/features/live/participant/components/on-answering/pool/FillBlank";
 import Paragraph from "@/features/live/participant/components/on-answering/pool/Paragraph";
+import Matching from "@/features/live/participant/components/on-answering/pool/Matching";
 
 type Props = {
   timeLeft: number;
@@ -80,6 +82,16 @@ export default function Pool({ timeLeft }: Props) {
           {curSubQ >= 0 && (
             <>
               {mod.value.question!.subquestions[curSubQ].type ===
+                QuestionTypesEnum.CHOICE && (
+                <Choice
+                  timeLeft={timeLeft}
+                  curSubQ={curSubQ}
+                  setCurSubQ={setCurSubQ}
+                  setMediaShown={setMediaShown}
+                  required={isRequired}
+                />
+              )}
+              {mod.value.question!.subquestions[curSubQ].type ===
                 QuestionTypesEnum.TRUE_FALSE && (
                 <TrueFalse
                   timeLeft={timeLeft}
@@ -102,6 +114,16 @@ export default function Pool({ timeLeft }: Props) {
               {mod.value.question!.subquestions[curSubQ].type ===
                 QuestionTypesEnum.PARAGRAPH && (
                 <Paragraph
+                  timeLeft={timeLeft}
+                  curSubQ={curSubQ}
+                  setCurSubQ={setCurSubQ}
+                  setMediaShown={setMediaShown}
+                  required={isRequired}
+                />
+              )}
+              {mod.value.question!.subquestions[curSubQ].type ===
+                QuestionTypesEnum.MATCHING && (
+                <Matching
                   timeLeft={timeLeft}
                   curSubQ={curSubQ}
                   setCurSubQ={setCurSubQ}
@@ -192,10 +214,12 @@ export default function Pool({ timeLeft }: Props) {
                         !mod.value.answers.answers.hasOwnProperty(curSubQ)) ||
                       (mod.value.answers &&
                         mod.value.answers.answers.hasOwnProperty(curSubQ) &&
-                        ((typeof mod.value.answers.answers[curSubQ] ===
+                        mod.value.answers.answers[curSubQ].content &&
+                        ((typeof mod.value.answers.answers[curSubQ].content ===
                           "string" &&
-                          typeof mod.value.answers.answers[curSubQ]) ||
-                          mod.value.answers.answers[curSubQ].length === 0))
+                          typeof mod.value.answers.answers[curSubQ].content) ||
+                          mod.value.answers.answers[curSubQ].content.length ===
+                            0))
                     ) {
                       setRequired(true);
                       return;
