@@ -18,7 +18,7 @@ export default function BaseTextarea(props: Props) {
   return (
     <textarea
       {...props}
-      className={`w-full h-20 xl:h-24 resize-none text-body-1 text-left px-3 xl:px-4 py-1.5 xl:py-3 border-regent-gray rounded-xl disabled:text-regent-gray transition-all duration-300 leading-tight ${props.className}`}
+      className={`w-full h-20 xl:h-24 resize-none text-body-1 text-left px-3 xl:px-4 py-1.5 xl:py-3 border-regent-gray rounded-xl disabled:text-regent-gray leading-tight ${props.className}`}
       cols={props.cols || 30}
       rows={props.rows || 10}
     />

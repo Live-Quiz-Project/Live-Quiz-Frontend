@@ -44,7 +44,7 @@ export default function BaseModal({ className, setOpen, children }: Props) {
       <div className="container px-2">
         <div
           ref={modalRef}
-          className={`w-fit mx-auto bg-white px-4 md:px-16 py-6 md:py-10 rounded-lg ${className}`}
+          className={`w-fit mx-auto bg-white px-8 md:px-16 py-6 md:py-10 rounded-lg ${className}`}
         >
           {children}
         </div>

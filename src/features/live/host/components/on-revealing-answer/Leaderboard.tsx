@@ -46,7 +46,7 @@ export default function Leaderboard() {
             </div>
           ))
         ) : (
-          <em className="m-auto font-sans-serif text-[1.25em]">
+          <em className="m-auto font-sans-serif text-[1.25em] text-regent-gray">
             No participants... yet!
           </em>
         )}

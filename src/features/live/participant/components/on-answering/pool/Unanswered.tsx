@@ -1,16 +1,14 @@
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
-import QuestionTypesEnum from "@/common/utils/question-types";
 import { MathJax } from "better-react-mathjax";
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { AiFillMessage, AiOutlineMessage } from "react-icons/ai";
 import { BiSwim } from "react-icons/bi";
 import { HiOutlineArrowLongDown } from "react-icons/hi2";
+import { useDispatch } from "react-redux";
+import { setAnswers } from "@/features/live/store/mod-slice";
+import QuestionTypesEnum from "@/common/utils/question-types";
 import Choice from "@/features/live/participant/components/on-answering/choice/Unanswered";
 import TrueFalse from "@/features/live/participant/components/on-answering/true-false/Unanswered";
-// import { useDispatch } from "react-redux";
-// import { setAnswers } from "@/features/live/store/mod-slice";
-// import { trigger } from "@/features/live/store/lqs-slice";
-// import wsActions from "@/features/live/utils/action-types";
 
 type Props = {
   timeLeft: number;
@@ -21,11 +19,12 @@ type Props = {
 };
 
 export default function Unanswered({
+  // timeLeft,
   curSubQ,
   setMediaShown,
   setCurSubQ,
 }: Props) {
-  // const dispatch = useDispatch<StoreDispatch>();
+  const dispatch = useDispatch<StoreDispatch>();
   const mod = useTypedSelector((state) => state.mod);
   const [isNoteExpanded, setNoteExpanded] = useState<boolean>(false);
   const [isNoteFirstOpened, setNoteFirstOpened] = useState<boolean>(true);
@@ -50,14 +49,30 @@ export default function Unanswered({
     }
     setMediaShown(false);
     setInvalidAmountOfOptions(false);
+    // dispatch(
+    //   setAnswers({
+    //     answers: [...selOpt],
+    //     time: Math.round((mod.value.question!.timeLimit - timeLeft) * 10),
+    //     marks: null,
+    //   })
+    // );
   }
 
   function onSubmitTrueFalse(
-    e: FormEvent<HTMLInputElement>
-    // opt: ChoiceOption
+    e: FormEvent<HTMLInputElement>,
+    opt: ChoiceOption
   ) {
     e.preventDefault();
     setMediaShown(false);
+    let ans = { ...mod.value.answers };
+    if (ans.answers) {
+      ans.answers[curSubQ] = [opt];
+    } else {
+      ans = {
+        answers: [[opt]],
+      };
+    }
+    dispatch(setAnswers(ans));
     setCurSubQ((prev) => prev + 1);
   }
 

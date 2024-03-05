@@ -183,7 +183,7 @@ export default function HostLobby() {
           >
             <QR
               className="w-full h-full"
-              value={`${import.meta.env.VITE_BASE_URL}/${code}/join`}
+              value={`${import.meta.env.VITE_BASE_URL}/join?code=${code}`}
               fgColor="#322F2D"
               bgColor="transparent"
             />

@@ -51,7 +51,7 @@ export default function ParticipantLobby() {
 
   return (
     <Layout>
-      <Layout.Content className="relative text-dune bg-egg-sour grid grid-rows-[auto_1fr] justify-items-center md:justify-items-start p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw]">
+      <Layout.Content className="relative w-full text-dune bg-egg-sour grid grid-rows-[auto_1fr] justify-items-center md:justify-items-start p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw]">
         <img src={logo} alt="logo" className="w-44 xs:w-52 2xl:w-[12vw]" />
         <div className="grid grid-rows-[1fr_auto_1fr] gap-[1.25em] items-center text-header-2 2xl:text-[1.25vw] text-center w-full text-wrap leading-tight font-serif">
           <p className="self-end">

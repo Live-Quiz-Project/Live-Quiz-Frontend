@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import { trigger } from "@/features/live/store/lqs-slice";
 import { useDispatch } from "react-redux";
@@ -9,18 +9,48 @@ import FilledButton from "@/common/components/buttons/FilledButton";
 import wsActions from "@/features/live/utils/action-types";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
 
-export default function Answered() {
+type Props = {
+  q?: Question;
+  a?: MatchingAnswer[];
+  onUnsubmit?: () => void;
+};
+
+export default function Answered({ q, a, onUnsubmit: propOnUnsubmit }: Props) {
   const dispatch = useDispatch<StoreDispatch>();
   const mod = useTypedSelector((state) => state.mod);
-  const [isExpanded, setExpanded] = useState<boolean>(true);
+  const [question, setQuestion] = useState<Question>(
+    q ? q : mod.value.question!
+  );
+  const [answers, setAnswers] = useState<MatchingAnswer[]>(
+    a ? a : mod.value.answers.answers
+  );
+  const [isExpanded, setExpanded] = useState<boolean>(false);
   const [cur, setCur] = useState<number>(0);
 
   function onUnsubmit() {
     dispatch(trigger({ type: wsActions.UNSUBMIT_ANSWER }));
   }
 
+  useEffect(() => {
+    if (q) {
+      setQuestion(q);
+    } else {
+      setQuestion(mod.value.question!);
+    }
+
+    if (a) {
+      setAnswers(a);
+    } else {
+      setAnswers(mod.value.answers.answers);
+    }
+  }, [q, a]);
+
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] gap-[1em] justify-items-center items-center h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw]">
+    <div
+      className={`grid grid-rows-[auto_1fr_auto] gap-[1em] justify-items-center items-center h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] ${
+        a ? "bg-koromiko/25" : ""
+      }`}
+    >
       <div className="grid grid-cols-[auto_1fr] gap-[1em] items-center font-serif">
         <div className="flex items-center h-[3em] font-serif truncate">
           <p className="translate-x-1/4 text-[2.25em] !-rotate-[25deg] text-sienna">
@@ -28,11 +58,15 @@ export default function Answered() {
           </p>
         </div>
         <MathJax className="tracking-tight font-medium text-left text-[1.75em] truncate leading-[1.75]">
-          {mod.value.question!.content}
+          {question!.content}
         </MathJax>
       </div>
-      <div className="grid grid-rows-[auto_1fr] gap-[1em] font-serif text-center w-full h-full my-auto overflow-hidden">
-        <p className="text-[1.15em]">Wait for others to answer...</p>
+      <div
+        className={`grid gap-[1em] font-serif text-center w-full h-full my-auto overflow-hidden ${
+          a ? "grid-rows-1" : "grid-rows-[auto_1fr]"
+        }`}
+      >
+        {!a && <p className="text-[1.15em]">Wait for others to answer...</p>}
         <div
           className={`grid w-full h-full transition-all duration-300 overflow-hidden content-center ${
             isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
@@ -49,10 +83,10 @@ export default function Answered() {
             setExpanded={setExpanded}
           >
             <BaseAccordion.Head>
-              Your answer{mod.value.answers.answers.length > 1 ? "s" : ""}
+              Your answer{answers.length > 1 ? "s" : ""}
             </BaseAccordion.Head>
             <BaseAccordion.Body className="relative w-full h-full">
-              {(mod.value.answers.answers as MatchingAnswer[]).map((a, i) => (
+              {(answers as MatchingAnswer[]).map((a, i) => (
                 <div
                   key={a.prompt}
                   className="absolute flex flex-col space-y-2 justify-center items-center transition-all duration-300 w-full h-full"
@@ -63,9 +97,9 @@ export default function Answered() {
                   <p className="font-sans-serif text-[1em] font-light truncate !w-3/4 sm:max-w-[30vw] text-center">
                     {i + 1}&#46;&nbsp;
                     {
-                      (
-                        mod.value.question!.options as MatchingOption
-                      ).prompts.find((o) => o.id === a.prompt)?.content
+                      (question!.options as MatchingOption).prompts.find(
+                        (o) => o.id === a.prompt
+                      )?.content
                     }
                   </p>
                   <ChoiceButton
@@ -73,18 +107,18 @@ export default function Answered() {
                     style={{
                       backgroundColor: mod.value.config.option.colorless
                         ? "#faf7ee"
-                        : (
-                            mod.value.question!.options as MatchingOption
-                          ).options.find((o) => o.id === a.option)?.color,
+                        : (question!.options as MatchingOption).options.find(
+                            (o) => o.id === a.option
+                          )?.color,
                     }}
                     areDetailsShown
                     disabled
                   >
                     <ChoiceButton.Content>
                       {
-                        (
-                          mod.value.question!.options as MatchingOption
-                        ).options.find((o) => o.id === a.option)?.content
+                        (question!.options as MatchingOption).options.find(
+                          (o) => o.id === a.option
+                        )?.content
                       }
                     </ChoiceButton.Content>
                   </ChoiceButton>
@@ -98,7 +132,7 @@ export default function Answered() {
                   <IoChevronBack className="w-5 h-5" />
                 </button>
               )}
-              {cur < mod.value.answers.answers.length - 1 && (
+              {cur < answers.length - 1 && (
                 <button
                   onClick={() => setCur(cur + 1)}
                   className="absolute top-1/2 -translate-y-1/2 right-0"
@@ -118,7 +152,7 @@ export default function Answered() {
         className={`bg-dune text-white font-sans-serif w-fit ${
           mod.value.config.participant.reanswer ? "opacity-100" : "opacity-0"
         }`}
-        onClick={onUnsubmit}
+        onClick={propOnUnsubmit ? propOnUnsubmit : onUnsubmit}
         disabled={!mod.value.config.participant.reanswer}
       >
         Unsubmit

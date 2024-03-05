@@ -67,7 +67,7 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
           >
             {isNoteExpanded && (
               <MathJax
-                className={`h-full tracking-tight font-medium text-left text-[1.75em] w-full ${
+                className={`h-full tracking-tight font-serif font-medium text-left text-[1.75em] w-full ${
                   isNoteExpanded
                     ? "pt-[0.1em] leading-normal"
                     : "truncate leading-[1.75]"
@@ -90,13 +90,13 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
         </div>
         {mode === 0 && (
           <div className="w-full h-full grid items-center text-center overflow-auto">
-            <MathJax className="tracking-tight font-medium text-[1.75em] leading-normal">
+            <MathJax className="tracking-tight font-medium text-[1.75em] leading-normal font-serif">
               {mod.value.question!.content}
             </MathJax>
           </div>
         )}
         {mode === 1 && (
-          <div className="grid grid-rows-6 sm:grid-rows-1 grid-flow-col sm:grid-flow-row sm:grid-cols-6 auto-cols-fr auto-rows-fr overflow-auto gap-[1em] text-[1.25em] leading-normal">
+          <div className="grid grid-rows-6 sm:grid-rows-1 grid-flow-col sm:grid-flow-row grid-cols-6 auto-cols-fr auto-rows-fr overflow-auto gap-[0.5em] md:gap-[1vw] text-[1.25em] leading-normal">
             {mod.value.question!.subquestions.map((subquestion, i) => (
               <button
                 key={subquestion.id}
@@ -104,16 +104,16 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
                 onClick={(e) => setCurSubQ(+e.currentTarget.value)}
                 className={`relative bg-beige border px-[10%] py-[7%] flex justify-between flex-col items-end text-right rounded-md sm:rounded-lg lg:rounded-xl 2xl:rounded-2xl w-full h-full ${
                   mod.value.question!.subquestions.length === 1
-                    ? "row-span-6 sm:row-span-1 sm:col-span-6"
+                    ? "row-span-6 sm:row-span-1 col-span-6"
                     : mod.value.question!.subquestions.length === 2
-                    ? "row-span-3 sm:row-span-1 sm:col-span-3"
+                    ? "row-span-3 sm:row-span-1 col-span-6 sm:col-span-3"
                     : mod.value.question!.subquestions.length === 3
-                    ? "row-span-2 sm:row-span-1 sm:col-span-2"
+                    ? "row-span-2 sm:row-span-1 col-span-6 sm:col-span-2"
                     : mod.value.question!.subquestions.length === 4
-                    ? "row-span-2 [&:nth-child(4)]:row-start-3 sm:row-span-1 sm:col-span-2 [&:nth-child(4)]:sm:col-start-3"
+                    ? "row-span-3 sm:row-span-1 col-span-3 sm:col-span-3"
                     : mod.value.question!.subquestions.length === 5
-                    ? "row-span-2 [&:nth-child(4)]:row-start-2 sm:row-span-1 sm:col-span-2 [&:nth-child(4)]:sm:col-start-2"
-                    : "row-span-2 sm:row-span-1 sm:col-span-2"
+                    ? "row-span-2 [&:nth-child(3)]:col-span-6 sm:row-span-1 col-span-3 sm:col-span-2 sm:[&:nth-child(4)]:col-start-2 sm:[&:nth-child(3)]:col-span-2"
+                    : "row-span-2 sm:row-span-1 col-span-3 sm:col-span-2"
                 }`}
               >
                 <div className="w-full">
@@ -125,7 +125,7 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
                     }
                   </p>
                   {subquestion.type !== QuestionTypesEnum.FILL_BLANK ? (
-                    <p className="truncate text-[1.5em] font-medium leading-loose">
+                    <p className="truncate text-[1.5em] font-medium leading-loose font-serif">
                       {subquestion.content}
                     </p>
                   ) : (
@@ -137,7 +137,7 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
                             {item}
                             {index <
                               (subquestion.options as TextOption[]).length && (
-                              <span className="text-koromiko mx-1">
+                              <span className="text-denim mx-1">
                                 &#40;{String.fromCharCode(65 + index)}&#41;
                               </span>
                             )}

@@ -11,7 +11,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { QrReader } from "react-qr-reader";
+import QrScanner from "./QrScanner";
+import BaseModal from "@/common/components/modals/BaseModal";
 
 type Props = {
   style?: CSSProperties;
@@ -31,8 +32,9 @@ export default function KeyPad({
   onNext,
 }: Props) {
   const [next, setNext] = useState<boolean>(false);
-  const [showQrReader, setShowQrReader] = useState<boolean>(false);
+  const [showQrScanner, setShowQrScanner] = useState<boolean>(false);
   const [readQr, setReadQr] = useState<string>("");
+  const [invalid, setInvalid] = useState<boolean>(false);
   const digitRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -49,7 +51,7 @@ export default function KeyPad({
         qrReaderRef.current &&
         !qrReaderRef.current.contains(e.target as Node)
       ) {
-        setShowQrReader(false);
+        setShowQrScanner(false);
       }
     }
 
@@ -70,9 +72,22 @@ export default function KeyPad({
 
   useEffect(() => {
     if (readQr) {
-      setShowQrReader(false);
+      const code = readQr.replace(
+        new RegExp(`${import.meta.env.VITE_BASE_URL}/(.*)/join`),
+        "$1"
+      );
+      setDigits(code.split(""));
+      setNext(true);
     }
   }, [readQr]);
+
+  useEffect(() => {
+    if (invalid) {
+      setTimeout(() => {
+        setInvalid(false);
+      }, 2000);
+    }
+  }, [invalid]);
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>, index: number) {
     setError(null);
@@ -123,7 +138,7 @@ export default function KeyPad({
     if (index + 1 < digitRefs.length) {
       digitRefs[index + 1].current?.focus();
     }
-    setNext(true);
+    if (index === digitRefs.length - 1) setNext(true);
   }
 
   return (
@@ -169,7 +184,7 @@ export default function KeyPad({
                 className="w-auto h-full aspect-square text-sienna"
                 onClick={() => {
                   // setReadQr("");
-                  setShowQrReader(true);
+                  setShowQrScanner(true);
                 }}
               >
                 <LuQrCode className="w-full h-full" />
@@ -183,37 +198,19 @@ export default function KeyPad({
           </div>
         </div>
       </div>
-      {showQrReader && (
-        <div className="fixed top-0 left-0 z-50 h-dvh w-screen bg-dune/50 flex items-center justify-center">
-          <div
-            ref={qrReaderRef}
-            className="w-fit h-fit container m-auto flex items-center justify-center"
-          >
-            <QrReader
-              videoId={Math.random().toString(36).substring(7)}
-              className="w-[50vw] h-[50vh] flex items-center justify-center"
-              onResult={(res, err) => {
-                if (
-                  showQrReader &&
-                  res &&
-                  qrReaderRef.current &&
-                  readQr !== res.getText()
-                ) {
-                  setReadQr(res.getText());
-                } else {
-                  return;
-                }
-                if (err) console.info(err);
-              }}
-              constraints={{ facingMode: "environtment" }}
-              scanDelay={1000}
-              videoContainerStyle={{
-                borderRadius: "1.5rem",
-              }}
-              videoStyle={{ objectFit: "cover" }}
-            />
-          </div>
+      {showQrScanner && (
+        <div className="fixed top-0 left-0 z-50 h-dvh w-screen flex items-center justify-center">
+          <QrScanner
+            setReadQr={setReadQr}
+            setShown={setShowQrScanner}
+            setInvalid={setInvalid}
+          />
         </div>
+      )}
+      {invalid && (
+        <BaseModal setOpen={setInvalid} className="text-dune">
+          QR Code is invalid. Please try again.
+        </BaseModal>
       )}
     </div>
   );

@@ -10,6 +10,7 @@ import {
 } from "react";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
 import DetailedOptionsSwitch from "@/features/live/participant/components/on-answering/DetailedOptionsSwitch";
+import FilledButton from "@/common/components/buttons/FilledButton";
 
 type Props = {
   onSubmit: (
@@ -19,6 +20,7 @@ type Props = {
   selectedOptions: ChoiceOption[];
   setSelectedOptions: Dispatch<SetStateAction<ChoiceOption[]>>;
   invalidAmountOfOptions: boolean;
+  required?: boolean;
   q?: Question;
 };
 
@@ -27,6 +29,7 @@ export default function Unanswered({
   selectedOptions,
   setSelectedOptions,
   invalidAmountOfOptions,
+  required,
   q,
 }: Props) {
   const mod = useTypedSelector((state) => state.mod);
@@ -150,7 +153,7 @@ export default function Unanswered({
 
   return (
     <div
-      className={`flex-1 grid gap-2 sm:gap-4 2xl:gap-[1vw] overflow-auto ${
+      className={`relative flex-1 grid gap-2 sm:gap-4 2xl:gap-[1vw] overflow-auto ${
         isQuestionExpanded || isNoteExpanded
           ? "grid-rows-2"
           : "grid-rows-[auto_1fr]"
@@ -234,21 +237,27 @@ export default function Unanswered({
             </div>
           </button>
         )}
-        {question!.selectMax > 1 && (
-          <p
-            className={`col-span-3 ${
-              invalidAmountOfOptions
-                ? "text-scarlet animate-bounce"
-                : "text-dune"
-            }`}
-          >
-            &#42;&nbsp;
-            {question!.selectMax === question!.selectMin
-              ? `Select exactly ${question!.selectMax} choices`
-              : `Select at least ${question!.selectMin} and up to ${
-                  question!.selectMax
-                } choices`}
+        {required ? (
+          <p className="col-span-3 text-scarlet animate-bounce">
+            &#42;&nbsp;This question is required to get to the next one.
           </p>
+        ) : (
+          question!.selectMax > 1 && (
+            <p
+              className={`col-span-3 ${
+                invalidAmountOfOptions
+                  ? "text-scarlet animate-bounce"
+                  : "text-dune"
+              }`}
+            >
+              &#42;&nbsp;
+              {question!.selectMax === question!.selectMin
+                ? `Select exactly ${question!.selectMax} choices`
+                : `Select at least ${question!.selectMin} and up to ${
+                    question!.selectMax
+                  } choices`}
+            </p>
+          )
         )}
       </div>
       <div
@@ -299,6 +308,14 @@ export default function Unanswered({
           </ChoiceButton>
         ))}
       </div>
+      {q && onSubmit && (
+        <FilledButton
+          className="absolute bottom-0 right-0 rounded-none rounded-tl-3xl bg-dune text-beige text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
+          onClick={onSubmit}
+        >
+          Submit
+        </FilledButton>
+      )}
     </div>
   );
 }

@@ -4,15 +4,25 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import BaseAccordion from "@/common/components/accordions/BaseAccordion";
 import ChoiceButton from "@/features/live/components/ChoiceButton";
 
-export default function Correct() {
+type Props = {
+  a?: ChoiceOption[];
+};
+
+export default function Correct({ a }: Props) {
   const mod = useTypedSelector((state) => state.mod);
+  const [answers, setAnswers] = useState<ChoiceOption[]>(
+    a ? a : mod.value.answers
+  );
   const [isExpanded, setExpanded] = useState<boolean>(true);
   const [cur, setCur] = useState<number>(0);
-  const [answers, setAnswers] = useState<ChoiceOption[]>([]);
 
   useEffect(() => {
-    setAnswers((mod.value.answers as ChoiceOption[]).filter((a) => a.correct));
-  }, [mod.value.answers]);
+    if (a) {
+      setAnswers(a);
+    } else {
+      setAnswers(mod.value.answers);
+    }
+  }, [a]);
 
   return (
     <div
