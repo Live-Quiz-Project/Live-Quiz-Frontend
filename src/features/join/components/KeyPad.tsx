@@ -73,7 +73,7 @@ export default function KeyPad({
   useEffect(() => {
     if (readQr) {
       const code = readQr.replace(
-        new RegExp(`${import.meta.env.VITE_BASE_URL}/(.*)/join`),
+        new RegExp(`${import.meta.env.VITE_BASE_URL}/join?code=(.*)`),
         "$1"
       );
       setDigits(code.split(""));

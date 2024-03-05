@@ -56,10 +56,11 @@ export default function Unanswered({
   const [options, setOptions] = useState<
     (MatchingOptionOption & { eliminated: boolean })[]
   >([]);
+  const [prompts, setPrompts] = useState<MatchingOptionPrompt[]>([]);
   const [isQuestionExpanded, setQuestionExpanded] = useState<boolean>(false);
   const [isNoteExpanded, setNoteExpanded] = useState<boolean>(false);
   const [isNoteFirstOpened, setNoteFirstOpened] = useState<boolean>(true);
-  const [areDetailsShown, setDetailsShown] = useState<boolean>(false);
+  const [areDetailsShown, setDetailsShown] = useState<boolean>(true);
   const optionsContainerGridFormat =
     question!.layout === 0 || question!.layout === 1
       ? (question!.options as MatchingOption).prompts.length >
@@ -230,6 +231,19 @@ export default function Unanswered({
   }`;
 
   useEffect(() => {
+    if (mod.value.config.shuffle.option) {
+      setDetailsShown(true);
+      setPrompts(
+        [...(question!.options as MatchingOption).prompts].sort(
+          () => Math.random() - 0.5
+        )
+      );
+    } else {
+      setPrompts([...(question!.options as MatchingOption).prompts]);
+    }
+  }, []);
+
+  useEffect(() => {
     if (q) {
       setQuestion(q);
     } else {
@@ -359,7 +373,7 @@ export default function Unanswered({
       <div
         className={`grid auto-cols-fr auto-rows-fr justify-items-center gap-2 sm:gap-4 2xl:gap-[1vw] p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 ${optionsContainerGridFormat}`}
       >
-        {(question!.options as MatchingOption).prompts.map((prompt, i) => (
+        {prompts.map((prompt, i) => (
           <div
             key={prompt.id}
             id={prompt.id}
@@ -388,9 +402,10 @@ export default function Unanswered({
                   id={prompt.id}
                   className="[&>label]:!cursor-[inherit]"
                   style={{
-                    backgroundColor: options.find(
-                      (o) => o.id === selectedOptions[prompt.id]
-                    )?.color,
+                    backgroundColor: mod.value.config.option.colorless
+                      ? "#faf7ee"
+                      : options.find((o) => o.id === selectedOptions[prompt.id])
+                          ?.color,
                   }}
                   areDetailsShown={areDetailsShown}
                 >
@@ -452,7 +467,11 @@ export default function Unanswered({
               <ChoiceButton
                 id={option.id}
                 className="[&>label]:!cursor-[inherit]"
-                style={{ backgroundColor: option.color }}
+                style={{
+                  backgroundColor: mod.value.config.option.colorless
+                    ? "#faf7ee"
+                    : option.color,
+                }}
                 areDetailsShown={areDetailsShown}
               >
                 <ChoiceButton.Icon>

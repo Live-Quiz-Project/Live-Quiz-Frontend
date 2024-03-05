@@ -86,7 +86,7 @@ export default function Answered({ q, a, onUnsubmit: propOnUnsubmit }: Props) {
               Your answer{answers.length > 1 ? "s" : ""}
             </BaseAccordion.Head>
             <BaseAccordion.Body className="relative w-full h-full">
-              {(answers as ChoiceOption[]).map((a, i) => (
+              {answers.map((a, i) => (
                 <div
                   key={a.id}
                   className="absolute flex justify-center items-center transition-all duration-300 w-full h-full"

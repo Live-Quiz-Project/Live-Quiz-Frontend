@@ -17,7 +17,7 @@ export default function Paragraph({ className = "", q, a }: Props) {
     q ? q : mod.value.question!
   );
   const [answers, setAnswers] = useState<TextOption[]>(
-    a ? a : mod.value.answers.answers
+    a ? a : mod.value.answers ? mod.value.answers?.answers : []
   );
   const [isExpanded, setExpanded] = useState<boolean>(true);
 
@@ -31,7 +31,7 @@ export default function Paragraph({ className = "", q, a }: Props) {
     if (a) {
       setAnswers(a);
     } else {
-      setAnswers(mod.value.answers.answers);
+      setAnswers(mod.value.answers ? mod.value.answers?.answers : []);
     }
   }, [q, a]);
 
@@ -67,30 +67,28 @@ export default function Paragraph({ className = "", q, a }: Props) {
           >
             <BaseAccordion.Head>Your answer</BaseAccordion.Head>
             <BaseAccordion.Body className="relative w-full h-full">
-              {answers && (answers as TextOption[]).length > 0 ? (
+              {answers && answers.length > 0 ? (
                 <div className="absolute flex flex-col space-y-2 justify-center items-center transition-all duration-300 w-full h-full font-sans-serif text-center">
                   <div
                     className={`flex items-center space-x-[0.25em] text-[1.5em] ${
-                      (answers as TextOption[])[0].correct
-                        ? "text-apple"
-                        : "text-scarlet"
+                      answers[0].correct ? "text-apple" : "text-scarlet"
                     }`}
                   >
-                    {(answers as TextOption[])[0].correct ? (
+                    {answers[0].correct ? (
                       <FaCheck className="min-w-[1em] min-h-[1em]" />
                     ) : (
                       <FaXmark className="min-w-[1em] min-h-[1em]" />
                     )}
                     <p className="text-[1em] break-all font-medium leading-snug">
-                      {(answers as TextOption[])[0].content}
+                      {answers[0].content}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1 w-full">
                     <p className="w-full text-[1em] break-all">
                       Answer&#58;&nbsp;
-                      <em>{(answers as TextOption[])[0].answer}</em>
+                      <em>{answers[0].answer}</em>
                     </p>
-                    {(answers as TextOption[])[0].caseSensitive ? (
+                    {answers[0].caseSensitive ? (
                       <p className="text-sienna text-[0.75em] font-bold">
                         Case Sensitive
                       </p>
@@ -100,6 +98,9 @@ export default function Paragraph({ className = "", q, a }: Props) {
                       </em>
                     )}
                   </div>
+                  <p className="text-[0.75em]">
+                    {answers[0].mark} Mark{answers[0].mark > 1 ? "s" : ""}
+                  </p>
                 </div>
               ) : (
                 <div className="absolute flex flex-col space-y-2 justify-center items-center transition-all duration-300 w-full h-full font-sans-serif text-center">

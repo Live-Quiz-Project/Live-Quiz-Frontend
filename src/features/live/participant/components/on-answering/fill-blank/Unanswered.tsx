@@ -111,14 +111,7 @@ export default function Unanswered({
           </p>
         )}
       </div>
-      <div
-        className="w-full h-full grid items-center content-start gap-4 sm:gap-6 2xl:gap-[1vw] p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 overflow-hidden"
-        style={{
-          gridTemplateRows: `repeat(${
-            (question!.options as TextOption[]).length
-          },minmax(0,1fr))`,
-        }}
-      >
+      <div className="w-full h-full grid items-center content-start gap-4 sm:gap-6 2xl:gap-[1vw] p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 overflow-auto">
         {(question!.options as TextOption[]).map((option, i) => (
           <div
             key={option.id}
@@ -132,7 +125,7 @@ export default function Unanswered({
               {String.fromCharCode(65 + i)}
             </span>
             <BaseTextarea
-              className="text-[1em] h-full border !border-dune bg-beige 2xl:p-[0.6em] w-full rounded-lg xs:rounded-xl 2xl:rounded-[1vw] break-all"
+              className="text-[1em] h-full max-h-32 border !border-dune bg-beige 2xl:p-[0.6em] w-full rounded-lg xs:rounded-xl 2xl:rounded-[1vw] break-all"
               placeholder={`Enter answer for blank ${String.fromCharCode(
                 65 + i
               )}...`}
