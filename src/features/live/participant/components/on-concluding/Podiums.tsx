@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
-import { LuDownload } from "react-icons/lu";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import logo from "@/common/assets/logo-dark.png";
 import crown from "@/common/assets/crown.png";
 import UserCard from "@/common/components/cards/UserCard";
 import FilledButton from "@/common/components/buttons/FilledButton";
+import { TbLogout } from "react-icons/tb";
+import { disconnect } from "@/features/live/store/lqs-slice";
+import { useDispatch } from "react-redux";
 
 export default function Podiums() {
   const { code } = useParams();
+  const dispatch = useDispatch<StoreDispatch>();
+  const navigate = useNavigate();
   const auth = useTypedSelector((state) => state.auth);
   const participants = useTypedSelector((state) => state.participants);
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -26,6 +30,11 @@ export default function Podiums() {
 
     return () => setIsMounted(false);
   }, []);
+
+  async function onLeave() {
+    dispatch(disconnect());
+    navigate("/join", { replace: true });
+  }
 
   return (
     <div className="h-full grid grid-rows-[auto_1fr] justify-items-center md:justify-items-start overflow-hidden p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pb-0">
@@ -61,7 +70,7 @@ export default function Podiums() {
               }`}
             />
             <div
-              className={`w-full overflow-hidden flex flex-col items-center space-y-[2vw] ${
+              className={`w-full overflow-hidden flex flex-col items-center space-y-[6vw] md:space-y-[2vw] ${
                 isMounted ? "h-full" : "h-0"
               }`}
             >
@@ -77,9 +86,12 @@ export default function Podiums() {
                 {participant.marks} Marks
               </p>
             </div>
-            <FilledButton className="group inline-flex font-sans-serif bg-koromiko 2xl:!py-[0.45vw] 2xl:!px-[1vw] text-body-1 md:text-header-2 2xl:text-[1vw] h-fit w-fit items-center gap-2">
-              <LuDownload />
-              Download
+            <FilledButton
+              onClick={onLeave}
+              className="space-x-2 group inline-flex font-sans-serif bg-dune text-beige 2xl:!py-[0.45vw] 2xl:!px-[1vw] text-body-1 md:text-header-2 2xl:text-[1vw] h-fit w-fit"
+            >
+              <p>Leave</p>
+              <TbLogout className="m-auto group-hover:translate-x-2 transition-all duration-300" />
             </FilledButton>
           </div>
         )}

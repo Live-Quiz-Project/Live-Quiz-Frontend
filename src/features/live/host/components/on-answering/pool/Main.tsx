@@ -102,7 +102,7 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
                 key={subquestion.id}
                 value={i}
                 onClick={(e) => setCurSubQ(+e.currentTarget.value)}
-                className={`relative bg-beige border px-[10%] py-[7%] flex justify-between flex-col items-end text-right rounded-md sm:rounded-lg lg:rounded-xl 2xl:rounded-2xl w-full h-full ${
+                className={`relative bg-beige border px-[10%] py-[7%] flex justify-between flex-col items-end text-left rounded-md sm:rounded-lg lg:rounded-xl 2xl:rounded-2xl w-full h-full ${
                   mod.value.question!.subquestions.length === 1
                     ? "row-span-6 sm:row-span-1 col-span-6"
                     : mod.value.question!.subquestions.length === 2
@@ -178,13 +178,13 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
                   )}
                   {(subquestion as any).pool_required && <em>Required</em>}
                 </div>
-                <div className="absolute bottom-0 left-0 px-[10%] py-[7%]">
+                {/* <div className="absolute bottom-0 left-0 px-[10%] py-[7%]">
                   <img
                     src=""
                     alt=""
                     className="w-[8vw] h-[8vw] sm:w-[4vw] sm:h-[4vw] object-contain"
                   />
-                </div>
+                </div> */}
               </button>
             ))}
           </div>

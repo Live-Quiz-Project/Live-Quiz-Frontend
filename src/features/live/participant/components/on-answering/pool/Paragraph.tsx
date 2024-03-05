@@ -1,11 +1,5 @@
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
-import {
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { useDispatch } from "react-redux";
 import Unanswered from "@/features/live/participant/components/on-answering/paragraph/Unanswered";
 import Answered from "@/features/live/participant/components/on-answering/paragraph/Answered";
@@ -109,10 +103,6 @@ export default function Paragraph({
       })
     );
   }
-
-  useEffect(() => {
-    console.log(mod.value.answers?.answers[curSubQ]);
-  }, []);
 
   return (
     <>
