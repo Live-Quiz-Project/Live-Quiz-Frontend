@@ -50,7 +50,13 @@ export default function ParticipantLiveQuiz() {
   }
 
   if (mod.value.status === wsStatuses.REVEALING_ANSWER) {
-    if (!code || !mod.value.question) return null;
+    console.log("yes, here");
+
+    if (!code || !mod.value.question) {
+      console.log("nope, here");
+
+      return null;
+    }
     return <OnRevealingAnswer />;
   }
 

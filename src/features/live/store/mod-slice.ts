@@ -110,7 +110,7 @@ export const mod = createSlice({
           timeFactor: payloadQuestion.time_factor,
           timeLimit: payloadQuestion.time_limit,
           pool: payloadQuestion.pool,
-          poolRequired: payloadQuestion.pool_required,
+          pool_required: payloadQuestion.pool_required,
           mediaType: payloadQuestion.media_type,
           media: payloadQuestion.media,
           selectMin: payloadQuestion.select_min,

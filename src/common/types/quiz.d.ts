@@ -2,7 +2,7 @@ declare global {
   type Question = {
     id: string;
     pool: number;
-    poolRequired: boolean;
+    pool_required: boolean;
     type: string;
     content: string;
     note: string;
@@ -65,7 +65,18 @@ declare global {
     qid: string;
     type: string;
     time: number;
-    options: ChoiceOption[] | TextOption[] | string | MatchingAnswer[];
+    options:
+      | ChoiceOption[]
+      | TextOption[]
+      | string
+      | MatchingAnswer[]
+      | {
+          [x: number]:
+            | ChoiceOption[]
+            | TextOption[]
+            | string
+            | MatchingAnswer[];
+        };
   };
 }
 

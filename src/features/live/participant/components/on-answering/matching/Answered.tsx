@@ -12,7 +12,7 @@ import ChoiceButton from "@/features/live/components/ChoiceButton";
 export default function Answered() {
   const dispatch = useDispatch<StoreDispatch>();
   const mod = useTypedSelector((state) => state.mod);
-  const [isExpanded, setExpanded] = useState<boolean>(true);
+  const [isExpanded, setExpanded] = useState<boolean>(false);
   const [cur, setCur] = useState<number>(0);
 
   function onUnsubmit() {

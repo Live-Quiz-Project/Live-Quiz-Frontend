@@ -217,32 +217,7 @@ export default function OnAnswering() {
             Skip
           </FilledButton>
           <div className="h-full flex flex-col items-center justify-evenly gap-[1vw] sm:gap-[0.4vw]">
-            {mod.value.question!.type === QuestionTypesEnum.POOL ? (
-              curSubQ >= 0 && (
-                <>
-                  <div className="flex justify-end items-center gap-[1vw] sm:gap-[0.25vw]">
-                    {(mod.value.question!.subquestions[curSubQ].type ===
-                      QuestionTypesEnum.CHOICE ||
-                      mod.value.question!.subquestions[curSubQ].type ===
-                        QuestionTypesEnum.TRUE_FALSE ||
-                      mod.value.question!.subquestions[curSubQ].type ===
-                        QuestionTypesEnum.MATCHING) && (
-                      <PiHandTapFill className="w-5 md:w-6 2xl:w-[1.25vw] h-5 md:h-6 2xl:h-[1.25vw]" />
-                    )}
-                    {(mod.value.question!.subquestions[curSubQ].type ===
-                      QuestionTypesEnum.FILL_BLANK ||
-                      mod.value.question!.subquestions[curSubQ].type ===
-                        QuestionTypesEnum.PARAGRAPH) && (
-                      <RiEdit2Fill className="w-5 md:w-6 2xl:w-[1.25vw] h-5 md:h-6 2xl:h-[1.25vw]" />
-                    )}
-                    <p className="text-[1em] xs:text-[1.15em] md:text-[1.5em] leading-none">
-                      {mod.value.resCount}
-                    </p>
-                  </div>
-                  <hr className="w-10" />
-                </>
-              )
-            ) : (
+            {mod.value.question!.type !== QuestionTypesEnum.POOL && (
               <>
                 <div className="flex justify-end items-center gap-[1vw] sm:gap-[0.25vw]">
                   {(mod.value.question!.type === QuestionTypesEnum.CHOICE ||

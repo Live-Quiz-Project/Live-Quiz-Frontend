@@ -1,7 +1,5 @@
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
-import { FormEvent, useEffect, useRef, useState } from "react";
-import Unanswered from "@/features/live/participant/components/on-answering/pool/Unanswered";
-import Answered from "@/features/live/participant/components/on-answering/pool/Answered";
+import { useEffect, useRef, useState } from "react";
 import {
   MdOutlineAudioFile,
   MdOutlineImage,
@@ -14,19 +12,18 @@ import NumberedTimer from "@/common/components/NumberedTimer";
 import { useSwipeable } from "react-swipeable";
 import MediaTypes from "@/features/live/utils/media-types";
 import FilledButton from "@/common/components/buttons/FilledButton";
-import { setAnswers } from "@/features/live/store/mod-slice";
-import { trigger } from "@/features/live/store/lqs-slice";
-import wsActions from "@/features/live/utils/action-types";
-import { useDispatch } from "react-redux";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import Main from "@/features/live/participant/components/on-answering/pool/Main";
+import QuestionTypesEnum from "@/common/utils/question-types";
+import TrueFalse from "@/features/live/participant/components/on-answering/pool/TrueFalse";
+import FillBlank from "@/features/live/participant/components/on-answering/pool/FillBlank";
+import Paragraph from "@/features/live/participant/components/on-answering/pool/Paragraph";
 
 type Props = {
   timeLeft: number;
 };
 
 export default function Pool({ timeLeft }: Props) {
-  const dispatch = useDispatch<StoreDispatch>();
-  // const auth = useTypedSelector((state) => state.auth);
   const mod = useTypedSelector((state) => state.mod);
   const [curSubQ, setCurSubQ] = useState<number>(-1);
   const [isMediaShown, setMediaShown] = useState<boolean>(false);
@@ -36,6 +33,10 @@ export default function Pool({ timeLeft }: Props) {
     onSwipedDown: () => setMediaShown(false),
   });
   const mediaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    console.log(mod.value.answers?.answers);
+  }, [mod.value.answers]);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -55,23 +56,9 @@ export default function Pool({ timeLeft }: Props) {
     };
   }, []);
 
-  function onSubmit(e: FormEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    setMediaShown(false);
-    dispatch(
-      setAnswers({
-        answers: [],
-        time: Math.round((mod.value.question!.timeLimit - timeLeft) * 10),
-        marks: null,
-      })
-    );
-    dispatch(
-      trigger({
-        type: wsActions.SUBMIT_ANSWER,
-        payload: [] as AnswerResponse[],
-      })
-    );
-  }
+  useEffect(() => {
+    if (curSubQ > -1) setRequired(false);
+  }, [curSubQ]);
 
   return (
     <div {...handlers}>
@@ -89,23 +76,45 @@ export default function Pool({ timeLeft }: Props) {
               : "text-2xl sm:text-2xl 2xl:text-[1.5vw]"
           }`}
         >
-          {(!mod.value.answers ||
-            (mod.value.answers && mod.value.answers.answers.length) <= 0) && (
-            <Unanswered
-              setMediaShown={setMediaShown}
-              timeLeft={timeLeft}
-              setCurSubQ={setCurSubQ}
-              curSubQ={curSubQ}
-              required={isRequired}
-            />
-          )}
-          {mod.value.answers && mod.value.answers.answers.length > 0 && (
-            <Answered />
+          {curSubQ < 0 && <Main />}
+          {curSubQ >= 0 && (
+            <>
+              {mod.value.question!.subquestions[curSubQ].type ===
+                QuestionTypesEnum.TRUE_FALSE && (
+                <TrueFalse
+                  timeLeft={timeLeft}
+                  curSubQ={curSubQ}
+                  setCurSubQ={setCurSubQ}
+                  setMediaShown={setMediaShown}
+                  required={isRequired}
+                />
+              )}
+              {mod.value.question!.subquestions[curSubQ].type ===
+                QuestionTypesEnum.FILL_BLANK && (
+                <FillBlank
+                  timeLeft={timeLeft}
+                  curSubQ={curSubQ}
+                  setCurSubQ={setCurSubQ}
+                  setMediaShown={setMediaShown}
+                  required={isRequired}
+                />
+              )}
+              {mod.value.question!.subquestions[curSubQ].type ===
+                QuestionTypesEnum.PARAGRAPH && (
+                <Paragraph
+                  timeLeft={timeLeft}
+                  curSubQ={curSubQ}
+                  setCurSubQ={setCurSubQ}
+                  setMediaShown={setMediaShown}
+                  required={isRequired}
+                />
+              )}
+            </>
           )}
           {mod.value.question!.mediaType !== "" &&
             (!mod.value.answers ||
-              (mod.value.answers.answers && mod.value.answers.answers.length) <=
-                0) && (
+              (mod.value.answers.answers[curSubQ] &&
+                mod.value.answers.answers[curSubQ].length) <= 0) && (
               <div
                 className={`absolute left-1/2 -translate-x-1/2 w-[95vw] h-[calc(100dvh-4rem)] xs:h-[calc(100dvh-5rem)] md:h-[calc(100dvh-7rem)] z-40 2xl:h-[90dvh] transition-all duration-300 ${
                   isMediaShown ? "top-0 pt-2.5" : "top-[calc(100%-1.99em)]"
@@ -161,7 +170,7 @@ export default function Pool({ timeLeft }: Props) {
             />
             <NumberedTimer className="block sm:hidden" timeLeft={timeLeft} />
           </div>
-          {curSubQ < mod.value.question!.subquestions.length - 1 ? (
+          {
             <div className="divide-x border divide-koromiko border-koromiko rounded-full h-fit">
               <FilledButton
                 className="!bg-sienna rounded-r-none !py-1 !px-0.5 xs:!p-2 h-full disabled:text-beige/30"
@@ -171,23 +180,37 @@ export default function Pool({ timeLeft }: Props) {
                 <BiChevronLeft className="w-4 h-4" />
               </FilledButton>
               <FilledButton
-                className="bg-sienna rounded-l-none !py-1 !px-0.5 xs:!p-2 h-full disabled:text-beige/10"
+                className="!bg-sienna rounded-l-none !py-1 !px-0.5 xs:!p-2 h-full disabled:text-beige/30"
                 onClick={() => {
+                  if (
+                    curSubQ > -1 &&
+                    mod.value.question!.subquestions[curSubQ].pool_required
+                  ) {
+                    if (
+                      !mod.value.answers ||
+                      (mod.value.answers &&
+                        !mod.value.answers.answers.hasOwnProperty(curSubQ)) ||
+                      (mod.value.answers &&
+                        mod.value.answers.answers.hasOwnProperty(curSubQ) &&
+                        ((typeof mod.value.answers.answers[curSubQ] ===
+                          "string" &&
+                          typeof mod.value.answers.answers[curSubQ]) ||
+                          mod.value.answers.answers[curSubQ].length === 0))
+                    ) {
+                      setRequired(true);
+                      return;
+                    }
+                  }
                   setCurSubQ((prev) => prev + 1);
-                  setRequired(false);
                 }}
+                disabled={
+                  curSubQ >= mod.value.question!.subquestions.length - 1
+                }
               >
                 <BiChevronRight className="w-4 h-4" />
               </FilledButton>
             </div>
-          ) : (
-            <FilledButton
-              className="bg-sienna !p-2 md:!px-5 xs:!py-3 text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
-              onClick={onSubmit}
-            >
-              Submit
-            </FilledButton>
-          )}
+          }
         </Layout.Footer>
       </Layout>
     </div>

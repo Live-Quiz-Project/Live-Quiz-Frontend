@@ -299,7 +299,7 @@ export default function Unanswered({
         )}
         {notAllAnswered && (
           <p className="col-span-3 text-scarlet animate-bounce">
-            Please match options to all prompts
+            &#42;&nbsp;Please match options to all prompts
           </p>
         )}
       </div>
