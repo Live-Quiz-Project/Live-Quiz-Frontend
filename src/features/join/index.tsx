@@ -102,6 +102,8 @@ export default function Join() {
           onClick={() => {
             setStep(0);
             setSearchParams({});
+            setDigits(Array.from({ length: 6 }, () => ""));
+            setError(null);
           }}
           className="absolute top-5 left-5 w-5 md:w-6 h-5 md:h-6 z-10"
         >

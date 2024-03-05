@@ -1,14 +1,13 @@
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Emoji from "@/common/utils/emojis";
-import EditableLabel from "@/common/components/inputs/EditableLabel";
 
 type Props = {
   className?: string;
   displayName: string;
   displayColor: string;
   displayEmoji: string;
-  onDisplayNameChange: (e: ChangeEvent<HTMLSpanElement>) => void;
-  onDisplayColorChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onDisplayNameChange: (e: FormEvent<HTMLInputElement>) => void;
+  onDisplayColorChange: (e: FormEvent<HTMLInputElement>) => void;
   onDisplayEmojiChange: (e: FormEvent<HTMLButtonElement>) => void;
 };
 
@@ -49,12 +48,11 @@ export default function CustomUserCard({
       >
         {Emoji.find((e) => e.value === displayEmoji)?.label || Emoji[0].label}
       </div>
-      <EditableLabel
+      <input
+        className="w-fit text-center bg-egg-sour overflow-hidden whitespace-nowrap [&:not(:focus)]:border-2 border-dashed border-koromiko rounded-md [&:not(:focus)]:w-full [&:not(:focus)]:text-ellipsis"
         value={displayName}
+        placeholder="Enter name..."
         onChange={onDisplayNameChange}
-        className="px-2 border-2 border-dashed border-koromiko rounded-lg"
-        placeholder="Enter your name..."
-        truncate
       />
       {isEditing && (
         <div className="w-full h-full fixed top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-50 !m-0 flex justify-center items-center">

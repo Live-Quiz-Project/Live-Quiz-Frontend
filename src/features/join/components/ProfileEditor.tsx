@@ -84,7 +84,7 @@ export default function ProfileEditor({ style }: Props) {
             displayColor={auth.value.participant.displayColor}
             displayEmoji={auth.value.participant.displayEmoji}
             onDisplayNameChange={(e) =>
-              dispatch(setParticipantDisplayName(e.currentTarget.textContent!))
+              dispatch(setParticipantDisplayName(e.currentTarget.value))
             }
             onDisplayColorChange={(e) =>
               dispatch(setParticipantDisplayColor(e.currentTarget.value))

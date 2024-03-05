@@ -17,7 +17,7 @@ export default function UserCard({ className = "", user, size }: Props) {
         size === "md" ? "text-header-1 p-1.5 h-20" : ""
       }${
         size === "lg" ? "text-subtitle p-2 h-24" : ""
-      } w-fit flex items-center font-light rounded-full bg-egg-sour font-sans-serif text-dune transition-all duration-300 ${className}`}
+      } w-fit grid grid-cols-[auto_1fr] items-center font-light rounded-full bg-egg-sour font-sans-serif text-dune transition-all duration-300 ${className}`}
     >
       <div
         className="min-h-full aspect-square flex items-center justify-center rounded-full"
