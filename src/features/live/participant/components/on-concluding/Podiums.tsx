@@ -57,7 +57,7 @@ export default function Podiums() {
                 : "h-0"
             }`}
           >
-            {participants.value.indexOf(participant) + 1 === 1 && (
+            {auth.value.participant.rank === 1 && (
               <img
                 src={crown}
                 alt="crown"
@@ -75,7 +75,7 @@ export default function Podiums() {
               }`}
             >
               <h1 className="text-header-1 2xl:text-[2vw] font-sans-serif w-[10vw] h-[10vw] sm:w-[4vw] sm:h-[4vw] 2xl:w-[2vw] 2xl:h-[2vw] inline-flex items-center justify-center bg-koromiko rounded-full">
-                {participants.value.indexOf(participant) + 1}
+                {auth.value.participant.rank}
               </h1>
               <UserCard
                 className="!bg-dune !text-beige !h-16 lg:!h-24 2xl:!h-[5vw] !text-header-2 lg:!text-header-1 2xl:!text-[1.5vw] !p-1 lg:!p-1.5"
