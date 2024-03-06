@@ -37,10 +37,6 @@ export default function Pool({ timeLeft }: Props) {
   const mediaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(mod.value.answers?.answers);
-  }, [mod.value.answers]);
-
-  useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (mediaRef.current && !mediaRef.current.contains(e.target as Node)) {
         setMediaShown(false);
