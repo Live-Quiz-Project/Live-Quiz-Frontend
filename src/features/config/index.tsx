@@ -19,15 +19,14 @@ import logo from "@/common/assets/logo-light.png";
 export default function Config() {
   const navigate = useNavigate();
   const dispatch = useDispatch<StoreDispatch>();
-  const [viewLeaderboardDuringQuestions, setViewLeaderboardDuringQuestions] =
-    useState<boolean>(true);
+  const [viewLeaderboardDuringQuestions] = useState<boolean>(true);
   const [viewLeaderboardAfterQuestions, setViewLeaderboardAfterQuestions] =
     useState<boolean>(true);
   const [shuffleQuestions, setShuffleQuestions] = useState<boolean>(false);
   const [shuffleOptions, setShuffleOptions] = useState<boolean>(false);
   const [colorlessOptions, setColorlessOptions] = useState<boolean>(false);
   const [reanswer, setReanswer] = useState<boolean>(true);
-  const [showCorrectAnswers, setShowCorrectAnswers] = useState<boolean>(true);
+  const [showCorrectAnswers] = useState<boolean>(true);
   const { quizId } = useParams();
 
   useEffect(() => {
@@ -91,21 +90,19 @@ export default function Config() {
         <div className="w-full sm:w-3/4 xl:w-1/2 h-full space-y-2 font-serif overflow-auto">
           <BaseAccordion init={true}>
             <BaseAccordion.Head className="flex items-center text-header-3 xs:text-header-2 font-semibold w-full h-10 overflow-hidden">
-              <p className="inline truncate">
-                Participants can view leaderboard
-              </p>
+              <p className="inline truncate">Leaderboard</p>
             </BaseAccordion.Head>
             <BaseAccordion.Body className="text-body-1 xs:text-header-3 indent-4 font-thin">
-              <div className="flex items-center justify-between py-1 space-x-4">
+              {/* <div className="flex items-center justify-between py-1 space-x-4">
                 <p className="truncate">During questions</p>
                 <BaseSwitch
                   checked={viewLeaderboardDuringQuestions}
                   setChecked={setViewLeaderboardDuringQuestions}
                   className="!h-6"
                 />
-              </div>
+              </div> */}
               <div className="flex items-center justify-between py-1 space-x-4">
-                <p className="truncate">After questions</p>
+                <p className="truncate">Show leaderboard</p>
                 <BaseSwitch
                   checked={viewLeaderboardAfterQuestions}
                   setChecked={setViewLeaderboardAfterQuestions}
@@ -127,14 +124,14 @@ export default function Config() {
                   className="!h-6"
                 />
               </div>
-              <div className="flex items-center justify-between py-1 space-x-4">
+              {/* <div className="flex items-center justify-between py-1 space-x-4">
                 <p className="truncate">Show correct answers and marks</p>
                 <BaseSwitch
                   checked={showCorrectAnswers}
                   setChecked={setShowCorrectAnswers}
                   className="!h-6"
                 />
-              </div>
+              </div> */}
               <div className="flex items-center justify-between py-1 space-x-4">
                 <p className="truncate">Colorless options</p>
                 <BaseSwitch

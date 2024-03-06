@@ -19,7 +19,7 @@ export default function Choice({ className, q, a }: Props) {
     q ? q : mod.value.question!
   );
   const [answers, setAnswers] = useState<ChoiceOption[]>(
-    a ? a : mod.value.answers.answers
+    a ? a : mod.value.answers ? mod.value.answers?.answers : []
   );
   const [isExpanded, setExpanded] = useState<boolean>(true);
   const [cur, setCur] = useState<number>(0);
@@ -34,7 +34,7 @@ export default function Choice({ className, q, a }: Props) {
     if (a) {
       setAnswers(a);
     } else {
-      setAnswers(mod.value.answers.answers);
+      setAnswers(mod.value.answers ? mod.value.answers?.answers : []);
     }
   }, [q, a]);
 

@@ -14,7 +14,7 @@ export default function FillBlank({ className = "", a }: Props) {
   const auth = useTypedSelector((state) => state.auth);
   const mod = useTypedSelector((state) => state.mod);
   const [answers, setAnswers] = useState<TextOption[]>(
-    a ? a : mod.value.answers.answers
+    a ? a : mod.value.answers ? mod.value.answers?.answers : []
   );
   const [isExpanded, setExpanded] = useState<boolean>(true);
   const [cur, setCur] = useState<number>(0);
@@ -23,7 +23,7 @@ export default function FillBlank({ className = "", a }: Props) {
     if (a) {
       setAnswers(a);
     } else {
-      setAnswers(mod.value.answers.answers);
+      setAnswers(mod.value.answers ? mod.value.answers?.answers : []);
     }
   }, [a]);
 

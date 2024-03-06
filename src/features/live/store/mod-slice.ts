@@ -87,7 +87,7 @@ export const mod = createSlice({
         },
         leaderboard: {
           during: action.payload.config.leaderboard.during,
-          after: action.payload.config.leaderboard.between,
+          after: action.payload.config.leaderboard.after,
         },
         option: {
           colorless: action.payload.config.option.colorless,

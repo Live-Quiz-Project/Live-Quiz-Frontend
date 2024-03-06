@@ -1,9 +1,17 @@
 import { useTypedSelector } from "@/common/hooks/useTypedSelector";
 import { GiPodium } from "react-icons/gi";
 import UserCard from "@/common/components/cards/UserCard";
+import { useEffect, useState } from "react";
 
 export default function Leaderboard() {
   const participants = useTypedSelector((state) => state.participants);
+  const [displayParticipants, setDisplayParticipants] = useState<
+    typeof participants.value
+  >([]);
+
+  useEffect(() => {
+    setDisplayParticipants(participants.value);
+  }, []);
 
   return (
     <div className="bg-quartz grid grid-rows-[auto_1fr] gap-[1em] md:gap-[2em] justify-items-center items-center h-full">
@@ -17,8 +25,8 @@ export default function Leaderboard() {
         </h1>
       </div>
       <div className="flex flex-col p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 w-full h-full gap-[0.5em] overflow-auto">
-        {participants.value && participants.value.length > 0 ? (
-          participants.value.map((p: any, i: number) => (
+        {displayParticipants && displayParticipants.length > 0 ? (
+          displayParticipants.map((p: any, i: number) => (
             <div
               key={p.id}
               className="w-full py-2 md:py-4 2xl:py-[1vw] px-3 xs:px-4 md:px-10 2xl:px-[2.5vw] bg-jordy-blue/50 flex items-center justify-between rounded-lg lg:rounded-xl 2xl:rounded-[1vw] border"

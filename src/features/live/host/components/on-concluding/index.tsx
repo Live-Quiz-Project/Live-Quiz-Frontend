@@ -16,9 +16,7 @@ export default function OnIncluding() {
   const navigate = useNavigate();
   const mod = useTypedSelector((state) => state.mod);
   const lqs = useTypedSelector((state) => state.lqs);
-  const [isShownAnyway, setShownAnyway] = useState<boolean>(
-    mod.value.config.leaderboard.after
-  );
+  const [isShownAnyway, setShownAnyway] = useState<boolean>(false);
   const [isDecidingToShow, setDecidingToShow] = useState<boolean>(false);
 
   async function onEnd(e: FormEvent<HTMLButtonElement>) {
@@ -29,8 +27,9 @@ export default function OnIncluding() {
 
   return (
     <div className="bg-beige h-dvh">
-      {mod.value.config.leaderboard.after || isShownAnyway ? (
-        <Podiums />
+      {(mod.value.config.leaderboard.after && !isShownAnyway) ||
+      isShownAnyway ? (
+        <Podiums onEnd={onEnd} />
       ) : (
         <div className="relative w-full h-full grid grid-rows-[auto_1fr] p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw]">
           <div className="flex justify-between items-center w-full font-bold">

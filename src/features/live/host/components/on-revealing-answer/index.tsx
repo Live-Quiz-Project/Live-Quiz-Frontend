@@ -49,13 +49,41 @@ export default function OnRevealingAnswer() {
       </Layout.Content>
       <Layout.Footer className="grid grid-cols-[1fr_auto] px-[5%] 2xl:px-[2vw] gap-[3vw] sm:gap-[2%]">
         {mode === 0 ? (
-          <FilledButton
-            type="button"
-            onClick={() => setMode((prev) => prev + 1)}
-            className="self-center place-self-end text-body-1 md:text-header-2 2xl:text-[1vw] bg-denim !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] w-fit h-fit transition-all duration-300"
-          >
-            Next
-          </FilledButton>
+          mod.value.config.leaderboard.after ? (
+            <FilledButton
+              type="button"
+              onClick={() => setMode((prev) => prev + 1)}
+              className="self-center place-self-end text-body-1 md:text-header-2 2xl:text-[1vw] bg-denim !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] w-fit h-fit transition-all duration-300"
+            >
+              Next
+            </FilledButton>
+          ) : (
+            <div className="flex flex-col-reverse sm:flex-row justify-evenly sm:justify-end items-end sm:items-center gap-x-[1.5vw] 2xl:gap-x-[1%]">
+              {mod.value.curQ < mod.value.totalQ && (
+                <FilledButton
+                  onClick={() =>
+                    dispatch(trigger({ type: wsActions.NEXT_QUESTION }))
+                  }
+                  className="group inline-flex font-sans-serif bg-denim text-beige !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] text-body-1 md:text-header-2 2xl:text-[1vw] h-fit w-fit"
+                >
+                  Next&nbsp;<span className="hidden sm:block">Question</span>
+                  <span className="block sm:hidden">Q</span>
+                  <FiArrowUpRight className="m-auto group-hover:translate-x-2 group-hover:-translate-y-2 transition-all duration-300" />
+                </FilledButton>
+              )}
+              {mod.value.curQ >= mod.value.totalQ && (
+                <FilledButton
+                  onClick={() =>
+                    dispatch(trigger({ type: wsActions.CONCLUDE }))
+                  }
+                  className="group inline-flex font-sans-serif bg-denim text-beige !px-2 md:!px-5 !py-1 xs:!py-2 2xl:!py-[0.45vw] 2xl:!px-[1vw] text-body-1 md:text-header-2 2xl:text-[1vw] h-fit w-fit "
+                >
+                  Continue
+                  <FiArrowRight className="hidden sm:block m-auto group-hover:translate-x-2 transition-all duration-300" />
+                </FilledButton>
+              )}
+            </div>
+          )
         ) : (
           <div className="flex flex-col-reverse sm:flex-row justify-evenly sm:justify-end items-end sm:items-center gap-x-[1.5vw] 2xl:gap-x-[1%]">
             <OutlinedButton
