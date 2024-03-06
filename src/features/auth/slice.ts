@@ -61,6 +61,8 @@ export const auth = createSlice({
       state.value.participant!.displayColor = action.payload;
     },
     setParticipant: (state, action: PayloadAction<any>) => {
+      console.log(action.payload.rank);
+
       state.value.participant = {
         id: action.payload.id,
         code: action.payload.code,
@@ -68,7 +70,11 @@ export const auth = createSlice({
         displayEmoji: action.payload.emoji,
         displayColor: action.payload.color,
         marks: action.payload.marks,
+        rank: action.payload.rank,
       };
+    },
+    setRank: (state, action: PayloadAction<number>) => {
+      state.value.participant!.rank = action.payload;
     },
     setTotalMarks: (state, action: PayloadAction<number>) => {
       state.value.participant!.marks = action.payload;
@@ -102,6 +108,7 @@ export const {
   setParticipantDisplayColor,
   setParticipant,
   setTotalMarks,
+  setRank,
   resetParticipant,
   resetParticipantDisplayData,
   refreshToken,

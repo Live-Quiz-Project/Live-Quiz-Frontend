@@ -9,7 +9,7 @@ import {
   setCountDown,
   updateMod,
 } from "@/features/live/store/mod-slice";
-import { setParticipant, setTotalMarks } from "@/features/auth/slice";
+import { setParticipant, setRank, setTotalMarks } from "@/features/auth/slice";
 import { setParticipants } from "@/features/live/store/participants-slice";
 import { resetLqs } from "@/features/live/store/lqs-slice";
 
@@ -64,6 +64,7 @@ const wsMiddleware =
           const { type: t, payload: p } = m.content;
           switch (t) {
             case wsActionTypes.JOIN_LQS:
+              console.log(p);
               if (
                 (!participant.id ||
                   (participant.id && p.participant_id === participant.id)) &&
@@ -72,6 +73,7 @@ const wsMiddleware =
                 dispatch(setParticipant(p));
               }
               if (user.isHost === p.is_host) dispatch(setAnswers(p.answers));
+              dispatch(setRank(p.rank));
               ws.send({ type: wsActionTypes.GET_PARTICIPANTS });
               dispatch(updateMod());
               break;
@@ -110,6 +112,7 @@ const wsMiddleware =
               dispatch(updateMod());
               break;
             case wsActionTypes.CONCLUDE:
+              dispatch(setRank(p));
               dispatch(updateMod());
               ws.send({ type: wsActionTypes.GET_PARTICIPANTS });
               break;
