@@ -21,7 +21,9 @@ export default function QrScanner({ setShown, setReadQr, setInvalid }: Props) {
   >("environment");
 
   const onScanSuccess = (result: Scanner.ScanResult) => {
-    if (result?.data.startsWith(import.meta.env.VITE_BASE_URL)) {
+    if (
+      result?.data.startsWith(`${import.meta.env.VITE_BASE_URL}/join?code=`)
+    ) {
       setReadQr(result?.data);
     } else {
       setInvalid(true);

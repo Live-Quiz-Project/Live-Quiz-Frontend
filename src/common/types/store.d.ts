@@ -11,7 +11,7 @@ declare global {
   type AuthStoreState = {
     token: string;
     user: User & { isHost: boolean };
-    participant: User & { code?: string; marks: number };
+    participant: User & { code?: string; marks: number; rank: number };
     anonymous: boolean;
   };
   type InitAuthStoreState = {
