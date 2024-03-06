@@ -57,6 +57,7 @@ export default function AuthGuard() {
             displayName: data.display_name,
             displayEmoji: data.display_emoji,
             displayColor: data.display_color,
+            rank: 0,
             marks: 0,
           },
           anonymous: false,
