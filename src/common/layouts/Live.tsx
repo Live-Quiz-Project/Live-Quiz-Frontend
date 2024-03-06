@@ -54,8 +54,8 @@ export default function Layout({ children, className }: Props) {
                 disabled={isQrExpanded}
               >
                 <QR
-                  className="w-full h-full rounded-sm"
-                  value={`${import.meta.env.VITE_BASE_URL}/${code}/join`}
+                  className="w-full h-full"
+                  value={`${import.meta.env.VITE_BASE_URL}/join?code=${code}`}
                   fgColor=""
                   bgColor="transparent"
                 />
