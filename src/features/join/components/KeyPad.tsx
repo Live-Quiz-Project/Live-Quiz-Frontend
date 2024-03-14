@@ -71,11 +71,8 @@ export default function KeyPad({
   }, [next]);
 
   useEffect(() => {
-    console.log(readQr);
     if (readQr) {
       const code = new URL(readQr).searchParams.get("code");
-      console.log(code);
-
       setDigits(code!.split(""));
       setNext(true);
     }

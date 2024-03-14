@@ -64,7 +64,6 @@ const wsMiddleware =
           const { type: t, payload: p } = m.content;
           switch (t) {
             case wsActionTypes.JOIN_LQS:
-              console.log(p);
               if (
                 (!participant.id ||
                   (participant.id && p.participant_id === participant.id)) &&

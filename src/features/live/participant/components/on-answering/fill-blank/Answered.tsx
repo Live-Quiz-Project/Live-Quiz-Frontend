@@ -23,8 +23,6 @@ export default function Answered({ a, onUnsubmit: propOnUnsubmit }: Props) {
   const [cur, setCur] = useState<number>(0);
 
   function onUnsubmit() {
-    console.log(propOnUnsubmit);
-
     dispatch(trigger({ type: wsActions.UNSUBMIT_ANSWER }));
   }
 

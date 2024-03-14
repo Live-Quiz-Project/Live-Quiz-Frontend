@@ -70,14 +70,10 @@ export default function FillBlank({ className = "", a }: Props) {
                 <p className="text-[1.5em] break-all font-medium leading-snug">
                   {a.content}
                 </p>
-                {a.caseSensitive ? (
+                {a.caseSensitive && (
                   <p className="text-denim text-[0.85em] font-bold">
                     Case Sensitive
                   </p>
-                ) : (
-                  <em className="text-regent-gray text-[0.85em]">
-                    Case Insensitive
-                  </em>
                 )}
                 <p className="font-sans-serif text-[0.75em]">
                   {a.mark} Mark{a.mark > 1 ? "s" : ""}

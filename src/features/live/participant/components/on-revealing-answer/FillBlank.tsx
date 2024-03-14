@@ -91,14 +91,10 @@ export default function FillBlank({ className = "", a }: Props) {
                       Answer&#58;&nbsp;
                       <em>{ans.answer}</em>
                     </p>
-                    {ans.caseSensitive ? (
+                    {ans.caseSensitive && (
                       <p className="text-sienna text-[0.75em] font-bold">
                         Case Sensitive
                       </p>
-                    ) : (
-                      <em className="text-regent-gray text-[0.75em]">
-                        Case Insensitive
-                      </em>
                     )}
                   </div>
                   <p className="text-[0.75em]">

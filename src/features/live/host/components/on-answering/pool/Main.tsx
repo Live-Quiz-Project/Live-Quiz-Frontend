@@ -146,7 +146,7 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
                     </p>
                   )}
                 </div>
-                <div className="text-regent-gray">
+                <div className="text-regent-gray text-right">
                   {(subquestion.type === QuestionTypesEnum.CHOICE ||
                     subquestion.type === QuestionTypesEnum.TRUE_FALSE) && (
                     <p className="text-[1em]">
@@ -178,13 +178,6 @@ export default function Main({ onSubmit, setCurSubQ }: Props) {
                   )}
                   {(subquestion as any).pool_required && <em>Required</em>}
                 </div>
-                {/* <div className="absolute bottom-0 left-0 px-[10%] py-[7%]">
-                  <img
-                    src=""
-                    alt=""
-                    className="w-[8vw] h-[8vw] sm:w-[4vw] sm:h-[4vw] object-contain"
-                  />
-                </div> */}
               </button>
             ))}
           </div>

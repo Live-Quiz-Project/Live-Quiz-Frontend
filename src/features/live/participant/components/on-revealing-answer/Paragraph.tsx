@@ -88,14 +88,10 @@ export default function Paragraph({ className = "", q, a }: Props) {
                       Answer&#58;&nbsp;
                       <em>{answers[0].answer}</em>
                     </p>
-                    {answers[0].caseSensitive ? (
+                    {answers[0].caseSensitive && (
                       <p className="text-sienna text-[0.75em] font-bold">
                         Case Sensitive
                       </p>
-                    ) : (
-                      <em className="text-regent-gray text-[0.75em]">
-                        Case Insensitive
-                      </em>
                     )}
                   </div>
                   <p className="text-[0.75em]">

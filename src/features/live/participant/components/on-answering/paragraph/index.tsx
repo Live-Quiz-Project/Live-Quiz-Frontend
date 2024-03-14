@@ -94,13 +94,19 @@ export default function Paragraph({ timeLeft }: Props) {
           }`}
         >
           {(!mod.value.answers ||
-            (mod.value.answers && !mod.value.answers.answer)) && (
+            (mod.value.answers &&
+              (mod.value.answers.answer === null ||
+                mod.value.answers.answer === undefined))) && (
             <Unanswered answer={answer} setAnswer={setAnswer} />
           )}
-          {mod.value.answers && mod.value.answers.answer && <Answered />}
+          {mod.value.answers &&
+            (mod.value.answers.answer !== null ||
+              mod.value.answers.answer !== undefined) && <Answered />}
           {mod.value.question!.mediaType !== "" &&
             (!mod.value.answers ||
-              (mod.value.answers && !mod.value.answers.answer)) && (
+              (mod.value.answers &&
+                (mod.value.answers.answer === null ||
+                  mod.value.answers.answer === undefined))) && (
               <div
                 className={`absolute left-1/2 -translate-x-1/2 w-[95vw] h-[calc(100dvh-4rem)] xs:h-[calc(100dvh-5rem)] md:h-[calc(100dvh-7rem)] z-40 2xl:h-[90dvh] transition-all duration-300 ${
                   isMediaShown ? "top-0 pt-2.5" : "top-[calc(100%-1.99em)]"
@@ -157,7 +163,9 @@ export default function Paragraph({ timeLeft }: Props) {
             <NumberedTimer className="block sm:hidden" timeLeft={timeLeft} />
           </div>
           {(!mod.value.answers ||
-            (mod.value.answers && !mod.value.answers.answer)) && (
+            (mod.value.answers &&
+              (mod.value.answers.answer === null ||
+                mod.value.answers.answer === undefined))) && (
             <FilledButton
               className="bg-sienna !p-2 md:!px-5 xs:!py-3 text-body-1 md:text-header-2 2xl:text-[1vw] h-fit"
               onClick={onSubmit}

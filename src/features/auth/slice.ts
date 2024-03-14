@@ -61,8 +61,6 @@ export const auth = createSlice({
       state.value.participant!.displayColor = action.payload;
     },
     setParticipant: (state, action: PayloadAction<any>) => {
-      console.log(action.payload.rank);
-
       state.value.participant = {
         id: action.payload.id,
         code: action.payload.code,
