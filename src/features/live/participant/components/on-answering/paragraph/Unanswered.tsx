@@ -153,7 +153,7 @@ export default function Unanswered({
       </div>
       <div className="w-full h-full p-4 xs:p-6 md:p-8 lg:p-12 2xl:p-[2.5vw] !pt-0 text-[1.5em] items-center tracking-tight leading-[1.75]">
         <BaseTextarea
-          className="text-[1em] border bg-beige p-2 sm:p-4 2xl:p-[0.6em] w-full h-full rounded-lg xs:rounded-xl 2xl:rounded-[1vw]"
+          className="text-[1em] border bg-beige p-2 sm:p-4 2xl:p-[0.6em] w-full min-h-full rounded-lg xs:rounded-xl 2xl:rounded-[1vw]"
           placeholder="Enter answer..."
           value={answer}
           onChange={onChange}
